@@ -1,0 +1,247 @@
+mutation addProject($name: String!) {
+  addProject(name: $name) {
+    name
+    client
+    domain
+    id
+    projectId
+    stages {
+      stageId
+      name
+      category
+      phase
+    }
+  }
+}
+
+query getProjects {
+  projects {
+    id
+    projectId
+    name
+    client
+    imageUrl
+  }
+}
+
+enum ProjectDomain {
+  infrastructure
+  energy
+  buildings
+  tunnels
+}
+
+mutation updateProject(
+  $id: String!
+  $name: String = null
+  $projectId: String = null
+  $client: String = null
+  $address: String = null
+  $city: String = null
+  $country: String = null
+  $domain: ProjectDomain = null
+  $metaFields: JSON = null
+  $file: String = null
+) {
+  updateProject(
+    id: $id
+    name: $name
+    projectId: $projectId
+    client: $client
+    address: $address
+    city: $city
+    country: $country
+    domain: $domain
+    metaFields: $metaFields
+    file: $file
+  ) {
+    name
+    imageUrl
+  }
+}
+
+query getSingleProject($id: String!) {
+  projects(filters: { id: { equal: $id } }) {
+    id
+    projectId
+    name
+    client
+    domain
+    address
+    city
+    country
+    metaFields
+    imageUrl
+  }
+}
+
+query getLifeCycleStages {
+  lifeCycleStages {
+    id
+    name
+    category
+    phase
+  }
+}
+
+query getProjectStages($projectId: String!) {
+  projectStages(projectId: $projectId) {
+    stageId
+    name
+    category
+    phase
+  }
+}
+
+mutation AddProjectStage($projectId: String!, $stageId: String!) {
+  addProjectStage(projectId: $projectId, stageId: $stageId) {
+    category
+    name
+    phase
+    stageId
+  }
+}
+
+mutation DeleteProjectStage($projectId: String!, $stageId: String!) {
+  deleteProjectStage(projectId: $projectId, stageId: $stageId)
+}
+
+mutation addProjectMember($name: String!, $email: String!, $projectId: String!, $projectGroups: [String!]!) {
+  addProjectMember(name: $name, email: $email, projectId: $projectId, projectGroupIds: $projectGroups) {
+    id
+    userId
+    name
+    email
+    company
+    lastLogin
+    projectGroups {
+      id
+      name
+    }
+  }
+}
+
+mutation addProjectMembersToGroup($groupId: String!, $memberIds: [String!]!) {
+  addProjectMembersToGroup(groupId: $groupId, memberIds: $memberIds) {
+    id
+    members {
+      name
+      email
+      company
+      lastLogin
+    }
+  }
+}
+
+mutation deleteProjectMember($userId: String!) {
+  deleteProjectMember(id: $userId)
+}
+
+mutation deleteProjectGroup($id: String!) {
+  deleteProjectGroup(id: $id)
+}
+
+query getProjectMembers($projectId: String!) {
+  projectMembers(projectId: $projectId) {
+    id
+    userId
+    name
+    userId
+    email
+    company
+    leaderOf {
+      id
+    }
+    lastLogin
+    projectGroups {
+      id
+      name
+    }
+  }
+}
+
+mutation removeProjectMembersFromGroup($groupId: String!, $memberIds: [String!]!) {
+  removeProjectMembersFromGroup(groupId: $groupId, memberIds: $memberIds) {
+    id
+  }
+}
+
+query getProjectGroups($projectId: String!) {
+  projectGroups(projectId: $projectId) {
+    id
+    name
+    projectId
+    leadId
+  }
+}
+
+mutation addProjectGroup($projectId: String!, $name: String!, $leadId: String = null) {
+  addProjectGroup(projectId: $projectId, name: $name, leadId: $leadId) {
+    id
+    name
+    leadId
+  }
+}
+
+mutation updateProjectGroup($id: String!, $name: String, $leadId: String) {
+  updateProjectGroup(id: $id, name: $name, leadId: $leadId) {
+    id
+    name
+    leadId
+    lead {
+      name
+      userId
+    }
+  }
+}
+
+query getProjectGroupsForTeamCard($projectId: String!) {
+  projectGroups(projectId: $projectId) {
+    name
+    lead {
+      id
+      name
+    }
+    members {
+      id
+      name
+    }
+  }
+}
+
+query getAccount {
+  account {
+    id
+    name
+    email
+    roles
+  }
+}
+
+mutation deleteProject($id: String!) {
+  deleteProject(id: $id)
+}
+
+query getTasks($reportingSchemaId: String!, $filters: TaskFilters) {
+  tasks(reportingSchemaId: $reportingSchemaId, filters: $filters) {
+    status
+    assignee {
+      ... on GraphQLProjectMember {
+        __typename
+        projectGroups {
+          name
+        }
+      }
+      ... on GraphQLProjectGroup {
+        __typename
+        name
+      }
+    }
+  }
+}
+
+query getReportingSchemas($projectId: String!) {
+  reportingSchemas(projectId: $projectId) {
+    id
+  }
+}
