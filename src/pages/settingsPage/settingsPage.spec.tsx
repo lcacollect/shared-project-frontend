@@ -1,9 +1,10 @@
-import '@testing-library/jest-dom'
 import { MockedProvider } from '@apollo/client/testing'
+import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
+import React from 'react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { ProjectSettingsPage } from './settingsPage'
 import { projectSettingsMock } from '../../__mocks__/projectSettings.mock'
+import { ProjectSettingsPage } from './settingsPage'
 
 describe('Project Settings Page', () => {
   it('should render successfully', async () => {

@@ -1,4 +1,6 @@
-import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
+import { AutoSaveCheckMark, CardTitle, InnerPaper, Loading, theme } from '@lcacollect/components'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import CheckIcon from '@mui/icons-material/Check'
 import {
   Alert,
   AlertProps,
@@ -11,8 +13,8 @@ import {
   Stack,
   TextField,
 } from '@mui/material'
+import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 import { GraphQlProject, ProjectDomain, useUpdateProjectMutation } from '../../dataAccess'
-import { CardTitle, InnerPaper, Loading, AutoSaveCheckMark } from '@lcacollect/components'
 
 interface ProjectInformationProps {
   project?: GraphQlProject
@@ -20,7 +22,7 @@ interface ProjectInformationProps {
 }
 
 export const ProjectInformation: React.FC<ProjectInformationProps> = (props) => {
-  const { project, selectionDropdown = <DomainDropdown /> } = props
+  const { project, selectionDropdown } = props
 
   const [snackbar, setSnackbar] = useState<Pick<AlertProps, 'children' | 'severity'> | null>(null)
 
@@ -74,7 +76,7 @@ export const ProjectInformation: React.FC<ProjectInformationProps> = (props) => 
           projectId={project.id}
           setError={setSnackbar}
         />
-        {selectionDropdown}
+        {selectionDropdown ?? <DomainDropdown data={project.domain} projectId={project.id} setError={setSnackbar} />}
       </Stack>
       {!!snackbar && (
         <Snackbar
@@ -90,21 +92,57 @@ export const ProjectInformation: React.FC<ProjectInformationProps> = (props) => 
   )
 }
 
-const DomainDropdown = () => {
-  const [domain, setDomain] = useState('')
+interface DomainDropdownProps {
+  data?: ProjectDomain | null | undefined
+  projectId: string | null | undefined
+  setError: Dispatch<SetStateAction<Pick<AlertProps, 'children' | 'severity'> | null>>
+}
 
-  const handleDomainChange = (event: SelectChangeEvent) => {
-    setDomain(event.target.value as ProjectDomain)
-    // TODO - Save to backend
+const DomainDropdown = ({ data, projectId, setError }: DomainDropdownProps) => {
+  const [domain, setDomain] = useState(data || '')
+  const [showCheckmark, setShowCheckmark] = useState(false)
+  const [updateProject, { loading, error }] = useUpdateProjectMutation()
+
+  const handleDomainChange = async (event: SelectChangeEvent) => {
+    const value = event.target.value as ProjectDomain
+    setDomain(value)
+    if (!projectId) {
+      return
+    }
+    const { errors } = await updateProject({ variables: { id: projectId, domain: value } })
+
+    if (errors) {
+      errors.forEach((error) => console.error(error))
+      setError({ children: errors[0].message, severity: 'error' })
+    } else {
+      setError(null)
+      setShowCheckmark(true)
+      setTimeout(() => setShowCheckmark(false), 2000)
+    }
   }
   return (
     <FormControl fullWidth variant='standard'>
       <InputLabel id='select-domain'>Domain</InputLabel>
-      <Select labelId='select-domain' value={domain} label='domain' onChange={handleDomainChange}>
-        <MenuItem value='infrastructure'>Infrastructure</MenuItem>
-        <MenuItem value='energy'>Energy</MenuItem>
-        <MenuItem value='buildings'>Buildings</MenuItem>
-        <MenuItem value='tunnels'>Tunnels</MenuItem>
+      <Select
+        labelId='select-domain'
+        value={domain}
+        label='domain'
+        onChange={handleDomainChange}
+        IconComponent={() =>
+          loading ? (
+            <Loading />
+          ) : showCheckmark ? (
+            <CheckIcon sx={{ color: error ? theme.palette.error.main : theme.palette.success.main }} />
+          ) : (
+            <ArrowDropDownIcon />
+          )
+        }
+      >
+        {Object.values(ProjectDomain).map((domain, index) => (
+          <MenuItem key={index} value={domain}>
+            {domain.charAt(0).toUpperCase() + domain.slice(1)}
+          </MenuItem>
+        ))}
       </Select>
     </FormControl>
   )
@@ -118,7 +156,7 @@ interface InformationInputProps {
   setError: Dispatch<SetStateAction<Pick<AlertProps, 'children' | 'severity'> | null>>
 }
 
-const InformationInput: React.FC<InformationInputProps> = (props) => {
+const InformationInput = (props: InformationInputProps) => {
   const { id, label, data = '', projectId, setError } = props
   const [value, setValue] = useState(data || '')
   const [updateProject, { loading, error }] = useUpdateProjectMutation()
