@@ -24,7 +24,7 @@ describe('Building Image Upload', () => {
 
     expect(baseElement).toBeDefined()
     expect(await screen.findByTestId('image-upload')).toBeInTheDocument()
-    expect(await screen.findByText('Project Information')).toBeInTheDocument()
+    expect(await screen.findByText('Image')).toBeInTheDocument()
     expect(await screen.findByTestId('upload-building-image-icon')).toBeVisible()
     const file = new File(['hello'], 'hello.png', { type: 'image/png' })
     const uploadButton = screen.getByRole('button', { name: 'UPLOAD' })
