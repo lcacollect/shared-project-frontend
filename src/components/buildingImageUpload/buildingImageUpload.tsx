@@ -100,6 +100,7 @@ export const BuildingImageUpload = () => {
         >
           <img
             aria-label='preview-image'
+            data-testid='preview-image'
             src={
               selectedFile
                 ? URL.createObjectURL(selectedFile)
@@ -116,6 +117,7 @@ export const BuildingImageUpload = () => {
           />
 
           <DriveFolderUploadOutlinedIcon
+            data-testid='upload-building-image-icon'
             sx={{
               display: selectedFile || projectData?.imageUrl ? 'none' : 'block',
               fontSize: '70px',
@@ -160,6 +162,7 @@ export const BuildingImageUpload = () => {
           ref={(node) => {
             uploadRef = node
           }}
+          data-testid='project-image-upload'
           id='ProjectImageUpload'
           type='file'
           onChange={handleUpload}
