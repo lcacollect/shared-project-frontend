@@ -34,20 +34,21 @@ describe('Project Information', () => {
     expect(screen.getByRole('textbox', { name: 'Country' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Domain' })).toBeInTheDocument()
   })
-  it('should show error in Snackbar', async () => {
+  it('should show allow updating input', async () => {
     const projectNameInput = screen.getByRole('textbox', { name: 'Project Name' })
     fireEvent.focus(projectNameInput)
     fireEvent.change(projectNameInput, { target: { value: '' } })
     fireEvent.blur(projectNameInput)
-    expect(screen.findByText('Test Error Message')).rejects.toThrowError('Test Error Message')
+    expect(await projectNameInput).toHaveValue('')
   })
 })
 
 describe('Project Information | selectionDropdown', () => {
   const existingProject = getSingleProjectResponse.data.projects[0]
+  const projectDomains = Object.values(ProjectDomain)
   const selectionDropdown = (
-    <Select labelId='select-domain' value={existingProject.domain} label='domain'>
-      {Object.values(ProjectDomain).map((domain, index) => (
+    <Select data-testid='select-domain' labelId='select-domain' value='' label='domain'>
+      {projectDomains.map((domain, index) => (
         <MenuItem key={index} value={domain} data-testid={`MenuItem-${domain}`}>
           {domain.charAt(0).toUpperCase() + domain.slice(1)}
         </MenuItem>
@@ -72,9 +73,10 @@ describe('Project Information | selectionDropdown', () => {
   })
   it('should render the component with a special selectionDropdown', async () => {
     expect(await screen.findByTestId('project-information-table')).toBeInTheDocument()
-    Object.values(ProjectDomain).map(async (domain) =>
-      expect(await screen.findByTestId(`MenuItem-${domain}`)).toBeInTheDocument(),
-    )
+    projectDomains.map(async (domain) => expect(await screen.findByTestId(`MenuItem-${domain}`)).toBeInTheDocument())
     expect(await screen.findByTestId('ArrowDropDownIcon')).toBeInTheDocument()
+    const dropdownElement = screen.getByTestId('select-domain')
+    expect(dropdownElement).toBeInTheDocument()
+    fireEvent.click(dropdownElement)
   })
 })

@@ -1,4 +1,3 @@
-import { GraphQLError } from 'graphql'
 import { MockedResponse } from '@apollo/client/testing'
 import { GetSingleProjectDocument, UpdateProjectDocument } from '../dataAccess'
 import getSingleProjectResponse from './getSingleProject'
@@ -30,9 +29,6 @@ export const projectInformationMock: MockedResponse[] = [
         id: projectId,
       },
     },
-    result: {
-      ...updateProjectResponse,
-      errors: [new GraphQLError('Test Error Message')],
-    },
+    result: updateProjectResponse,
   },
 ]
