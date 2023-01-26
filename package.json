@@ -1,6 +1,6 @@
 {
   "name": "@lcacollect/project",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A shared library for project related components and pages",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -37,6 +37,7 @@
     "@graphql-tools/schema": "^9.0.4",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
     "@tsconfig/create-react-app": "^1.0.2",
     "@types/node": "^18.8.5",
     "@types/react": "^18.0.21",
