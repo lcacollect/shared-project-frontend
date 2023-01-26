@@ -82,7 +82,7 @@ export const BuildingImageUpload = () => {
 
   return (
     <InnerPaper data-testid='image-upload'>
-      <CardTitle title='Project Information' size='medium' />
+      <CardTitle title='Image' size='medium' />
       <Stack spacing={2}>
         <Box
           id='image-upload'
