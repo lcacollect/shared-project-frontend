@@ -1,18 +1,20 @@
-import '@testing-library/jest-dom'
 import { MockedProvider } from '@apollo/client/testing'
+import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import React from 'react'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { membersPageMock } from '../../__mocks__/membersPage.mock'
 import { MembersPage } from './index'
 
 describe('Project Member Page', () => {
   it('should render successfully', async () => {
     const { baseElement } = render(
-      <MockedProvider>
-        <BrowserRouter>
+      <MockedProvider mocks={membersPageMock} addTypename={false}>
+        <MemoryRouter initialEntries={['/projects/acfa456f-6628-4c0d-a0c8-1a53b1a46785/members']}>
           <Routes>
-            <Route path='/' element={<MembersPage />} />
+            <Route path='/projects/:projectId/members' element={<MembersPage />} />
           </Routes>
-        </BrowserRouter>
+        </MemoryRouter>
       </MockedProvider>,
     )
     expect(baseElement).toBeDefined()

@@ -30,52 +30,30 @@ export const ProjectInformation: React.FC<ProjectInformationProps> = (props) => 
     return <Loading />
   }
 
+  const fields = [
+    { id: 'name', label: 'Project Name' },
+    { id: 'projectId', label: 'Project Id' },
+    { id: 'client', label: 'Client' },
+    { id: 'address', label: 'Address' },
+    { id: 'city', label: 'City' },
+    { id: 'country', label: 'Country' },
+  ]
+
   return (
     <InnerPaper data-testid='project-information-table'>
       <CardTitle title='Project Information' size='medium' />
       <Stack spacing={2} sx={{ marginTop: 2 }}>
-        <InformationInput
-          id={'name'}
-          label={'Project Name'}
-          data={project.name}
-          projectId={project.id}
-          setError={setSnackbar}
-        />
-        <InformationInput
-          id={'projectId'}
-          label={'Project Id'}
-          data={project.projectId as string}
-          projectId={project.id}
-          setError={setSnackbar}
-        />
-        <InformationInput
-          id={'client'}
-          label={'Client'}
-          data={project.client as string}
-          projectId={project.id}
-          setError={setSnackbar}
-        />
-        <InformationInput
-          id={'address'}
-          label={'Address'}
-          data={project.address as string}
-          projectId={project.id}
-          setError={setSnackbar}
-        />
-        <InformationInput
-          id={'city'}
-          label={'City'}
-          data={project.city as string}
-          projectId={project.id}
-          setError={setSnackbar}
-        />
-        <InformationInput
-          id={'country'}
-          label={'Country'}
-          data={project.country as string}
-          projectId={project.id}
-          setError={setSnackbar}
-        />
+        {fields.map(({ id, label }, index) => (
+          <InformationInput
+            key={index}
+            id={id}
+            label={label}
+            data={project[id as keyof GraphQlProject] as string}
+            projectId={project.id}
+            setError={setSnackbar}
+            data-testid={`project-information-input-${id}`}
+          />
+        ))}
         {selectionDropdown ?? <DomainDropdown data={project.domain} projectId={project.id} setError={setSnackbar} />}
       </Stack>
       {!!snackbar && (
@@ -166,6 +144,7 @@ const InformationInput = (props: InformationInputProps) => {
 
     if (errors) {
       errors.forEach((error) => console.error(error))
+      errors.forEach((error) => console.log(error))
       setError({ children: errors[0].message, severity: 'error' })
     } else {
       setError(null)
