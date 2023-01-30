@@ -245,3 +245,28 @@ query getReportingSchemas($projectId: String!) {
     id
   }
 }
+
+query getProjectSchemas($projectId: String!) {
+  reportingSchemas(projectId: $projectId) {
+    id
+    name
+  }
+}
+
+mutation addReportingSchemaFromTemplate($templateId: String!, $name: String, $projectId: String!) {
+  addReportingSchemaFromTemplate(templateId: $templateId, name: $name, projectId: $projectId) {
+    id
+    name
+  }
+}
+
+query getSchemaTemplates {
+  schemaTemplates {
+    id
+    name
+    schema {
+      name
+      id
+    }
+  }
+}
