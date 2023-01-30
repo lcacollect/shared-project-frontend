@@ -1,12 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
-import React from 'react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { expect } from 'vitest'
-import { projectSettingsMock } from '../../../../frontend/src/__mocks__/projectSettings.mock'
+import { projectSettingsMock } from '../../__mocks__/projectSettings.mock'
 import { ProjectMetaFieldInput } from './metaFieldInput'
-import getSingleProjectResponse from '../../../../frontend/src/__mocks__/getSingleProject'
+import getSingleProjectResponse from '../../__mocks__/getSingleProject'
 
 describe('Meta Field Input | TextField', () => {
   it('should render successfully', async () => {
