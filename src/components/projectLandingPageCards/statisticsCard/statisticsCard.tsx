@@ -16,6 +16,9 @@ export const LandingPageStatisticsCard: React.FC = () => {
         borderRadius: 3,
       }}
     >
+      <Typography id='lca-recent-projects-landing-page-statistics-title' fontWeight={'bold'} fontSize={24}>
+        Tasks
+      </Typography>
       <Stack
         direction={'column'}
         sx={{
@@ -24,9 +27,6 @@ export const LandingPageStatisticsCard: React.FC = () => {
           display: 'flex',
         }}
       >
-        <Typography id='lca-recent-projects-landing-page-statistics-title' fontWeight={'bold'} fontSize={24}>
-          Tasks
-        </Typography>
         <DataFetchWrapper loading={!projectId} error={undefined}>
           <LandingPageStatisticsBarChart projectId={projectId} />
         </DataFetchWrapper>

@@ -1,4 +1,4 @@
-import { DataFetchWrapper, theme } from '@lcacollect/components'
+import { DataFetchWrapper, theme, NoRowsOverlay } from '@lcacollect/components'
 import React, { useMemo } from 'react'
 import Chart from 'react-google-charts'
 import { GetTasksQuery, TaskStatus, useGetReportingSchemasQuery, useGetTasksQuery } from '../../../dataAccess'
@@ -20,43 +20,47 @@ export const LandingPageStatisticsBarChart: React.FC<{ projectId: string }> = (p
     error: tasksError,
   } = useGetTasksQuery({
     variables: {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain, @typescript-eslint/no-non-null-assertion
-      reportingSchemaId: data?.reportingSchemas[0].id!,
+      reportingSchemaId: data?.reportingSchemas[0].id as string,
     },
     skip: !data?.reportingSchemas,
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const chartData = useMemo(() => {
-    if (!tasksData) return null
+    if (!tasksData || !tasksData.tasks.length) return null
     const tasks = tasksData.tasks
     const aggregatedTasks = aggregateTasksByAssignedGroupName(tasks)
     const data = sumCategoriesByStatus(aggregatedTasks)
-    const chartData = [['Task', 'Pending', 'Done', 'Approved'], ...data]
+    return [['Task', 'Pending', 'Done', 'Approved'], ...data]
+  }, [tasksData])
 
-    return chartData
-  }, [tasksData])!
+  if (!data?.reportingSchemas || !data.reportingSchemas.length) {
+    return <NoRowsOverlay text='No tasks created' />
+  }
 
   return (
-    <DataFetchWrapper error={tasksError} loading={tasksLoading || !chartData}>
-      <Chart
-        chartType='BarChart'
-        width='100%'
-        style={{
-          display: 'flex',
-          flexGrow: 1,
-        }}
-        data={chartData}
-        options={{
-          isStacked: true,
-          legend: {
-            position: 'bottom',
-            alignment: 'center',
-            maxLines: 3,
-          },
-          colors: [theme.palette.error.main, theme.palette.warning.main, theme.palette.success.main],
-        }}
-      />
+    <DataFetchWrapper error={tasksError} loading={tasksLoading}>
+      {chartData ? (
+        <Chart
+          chartType='BarChart'
+          width='100%'
+          style={{
+            display: 'flex',
+            flexGrow: 1,
+          }}
+          data={chartData}
+          options={{
+            isStacked: true,
+            legend: {
+              position: 'bottom',
+              alignment: 'center',
+              maxLines: 3,
+            },
+            colors: [theme.palette.error.main, theme.palette.warning.main, theme.palette.success.main],
+          }}
+        />
+      ) : (
+        <NoRowsOverlay text='No tasks created' />
+      )}
     </DataFetchWrapper>
   )
 }
