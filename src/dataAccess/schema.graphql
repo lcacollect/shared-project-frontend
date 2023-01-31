@@ -146,7 +146,6 @@ query getProjectMembers($projectId: String!) {
     id
     userId
     name
-    userId
     email
     company
     leaderOf {
@@ -205,6 +204,16 @@ query getProjectGroupsForTeamCard($projectId: String!) {
     members {
       id
       name
+    }
+  }
+}
+
+query getProjectMembersForTeamCard($projectId: String!) {
+  projectMembers(projectId: $projectId) {
+    id
+    name
+    projectGroups {
+      id
     }
   }
 }

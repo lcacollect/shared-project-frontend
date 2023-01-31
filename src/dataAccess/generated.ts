@@ -1929,6 +1929,20 @@ export type GetProjectGroupsForTeamCardQuery = {
   }>
 }
 
+export type GetProjectMembersForTeamCardQueryVariables = Exact<{
+  projectId: Scalars['String']
+}>
+
+export type GetProjectMembersForTeamCardQuery = {
+  __typename?: 'Query'
+  projectMembers: Array<{
+    __typename?: 'GraphQLProjectMember'
+    id: string
+    name: string
+    projectGroups?: Array<{ __typename?: 'GraphQLProjectGroup'; id: string }> | null
+  }>
+}
+
 export type GetAccountQueryVariables = Exact<{ [key: string]: never }>
 
 export type GetAccountQuery = {
@@ -2581,7 +2595,6 @@ export const GetProjectMembersDocument = gql`
       id
       userId
       name
-      userId
       email
       company
       leaderOf {
@@ -2877,6 +2890,63 @@ export type GetProjectGroupsForTeamCardLazyQueryHookResult = ReturnType<typeof u
 export type GetProjectGroupsForTeamCardQueryResult = Apollo.QueryResult<
   GetProjectGroupsForTeamCardQuery,
   GetProjectGroupsForTeamCardQueryVariables
+>
+export const GetProjectMembersForTeamCardDocument = gql`
+  query getProjectMembersForTeamCard($projectId: String!) {
+    projectMembers(projectId: $projectId) {
+      id
+      name
+      projectGroups {
+        id
+      }
+    }
+  }
+`
+
+/**
+ * __useGetProjectMembersForTeamCardQuery__
+ *
+ * To run a query within a React component, call `useGetProjectMembersForTeamCardQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProjectMembersForTeamCardQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProjectMembersForTeamCardQuery({
+ *   variables: {
+ *      projectId: // value for 'projectId'
+ *   },
+ * });
+ */
+export function useGetProjectMembersForTeamCardQuery(
+  baseOptions: Apollo.QueryHookOptions<GetProjectMembersForTeamCardQuery, GetProjectMembersForTeamCardQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GetProjectMembersForTeamCardQuery, GetProjectMembersForTeamCardQueryVariables>(
+    GetProjectMembersForTeamCardDocument,
+    options,
+  )
+}
+export function useGetProjectMembersForTeamCardLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetProjectMembersForTeamCardQuery,
+    GetProjectMembersForTeamCardQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GetProjectMembersForTeamCardQuery, GetProjectMembersForTeamCardQueryVariables>(
+    GetProjectMembersForTeamCardDocument,
+    options,
+  )
+}
+export type GetProjectMembersForTeamCardQueryHookResult = ReturnType<typeof useGetProjectMembersForTeamCardQuery>
+export type GetProjectMembersForTeamCardLazyQueryHookResult = ReturnType<
+  typeof useGetProjectMembersForTeamCardLazyQuery
+>
+export type GetProjectMembersForTeamCardQueryResult = Apollo.QueryResult<
+  GetProjectMembersForTeamCardQuery,
+  GetProjectMembersForTeamCardQueryVariables
 >
 export const GetAccountDocument = gql`
   query getAccount {
