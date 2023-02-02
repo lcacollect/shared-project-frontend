@@ -13,6 +13,6 @@ export default defineConfig({
       inline: ['**/@lca/**'],
     },
     setupFiles: './vitest.setup.ts',
-    css: false
+    css: false,
   },
 })

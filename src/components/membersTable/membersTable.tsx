@@ -20,6 +20,7 @@ import {
   useAddProjectMembersToGroupMutation,
   useDeleteProjectMemberMutation,
   useGetProjectGroupsQuery,
+  GridValueOptionsParams,
   useGetProjectMembersQuery,
   useRemoveProjectMembersFromGroupMutation,
 } from '../../dataAccess'
@@ -231,6 +232,17 @@ export const MembersTable = () => {
     return ''
   }
 
+  const groupValueOptions = (cell: GridValueOptionsParams) => {
+    const options = projectGroups?.map((group) => ({
+      value: group.id,
+      label: group.name as string,
+    }))
+    if (options?.[0]) {
+      return options
+    }
+    return [{ value: '', label: 'No groups in project' }]
+  }
+
   const columns: GridColumns = [
     {
       field: 'id',
@@ -253,10 +265,7 @@ export const MembersTable = () => {
       flex: 2,
       type: 'singleSelect',
       editable: true,
-      valueOptions: projectGroups?.map((group) => ({
-        value: group.id,
-        label: group.name as string,
-      })),
+      valueOptions: groupValueOptions,
       valueFormatter: groupValueFormatter,
     },
     {
