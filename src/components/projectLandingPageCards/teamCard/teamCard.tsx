@@ -1,8 +1,4 @@
-import {
-  GraphQlProjectMember,
-  useGetProjectGroupsForTeamCardQuery,
-  useGetProjectMembersForTeamCardQuery,
-} from '../../../dataAccess'
+import { useGetProjectGroupsForTeamCardQuery, useGetProjectMembersForTeamCardQuery } from '../../../dataAccess'
 import { Stack } from '@mui/material'
 import React, { useMemo } from 'react'
 import { useParams } from 'react-router-dom'

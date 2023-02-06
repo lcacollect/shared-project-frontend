@@ -14,7 +14,7 @@ import {
   TextField,
 } from '@mui/material'
 import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
-import { GraphQlProject, ProjectDomain, useUpdateProjectMutation } from '../../dataAccess'
+import { GetSingleProjectDocument, GraphQlProject, ProjectDomain, useUpdateProjectMutation } from '../../dataAccess'
 
 interface ProjectInformationProps {
   project?: GraphQlProject
@@ -87,7 +87,9 @@ const DomainDropdown = ({ data, projectId, setError }: DomainDropdownProps) => {
     if (!projectId) {
       return
     }
-    const { errors } = await updateProject({ variables: { id: projectId, domain: value } })
+    const { errors } = await updateProject({
+      variables: { id: projectId, domain: value },
+    })
 
     if (errors) {
       errors.forEach((error) => console.error(error))
@@ -140,7 +142,10 @@ const InformationInput = (props: InformationInputProps) => {
   const [updateProject, { loading, error }] = useUpdateProjectMutation()
 
   const handleBlur = async () => {
-    const { errors } = await updateProject({ variables: { id: projectId, [id]: value } })
+    const { errors } = await updateProject({
+      variables: { id: projectId, [id]: value },
+      refetchQueries: [{ query: GetSingleProjectDocument, variables: { id: projectId } }],
+    })
 
     if (errors) {
       errors.forEach((error) => console.error(error))
