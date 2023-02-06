@@ -24,11 +24,11 @@ import { GraphQLErrors } from '@apollo/client/errors'
 
 export const ProjectsTable = () => {
   const [snackbar, setSnackbar] = useState<Pick<AlertProps, 'children' | 'severity'> | null>(null)
-  const [addProject] = useAddProjectMutation()
   const { data: projectData, error: projectError, loading: projectLoading } = useGetProjectsQuery()
   const projects = useMemo(() => projectData?.projects, [projectData])
   const { data: accountData, error: accountError, loading: accountLoading } = useGetAccountQuery()
   const [deleteProject] = useDeleteProjectMutation({ refetchQueries: ['getProjects'] })
+  const [addProject] = useAddProjectMutation()
 
   const navigate = useNavigate()
 
@@ -38,6 +38,12 @@ export const ProjectsTable = () => {
   )
 
   const handleCreateProject = async () => {
+    if (!accountData?.account.id) {
+      const error = 'Account details not loaded. Please try again'
+      console.error(error)
+      setSnackbar({ children: error, severity: 'error' })
+      return null
+    }
     const { data, errors } = await addProject({
       variables: { name: '', members: [{ userId: accountData?.account.id as string }] },
       refetchQueries: ['getProjects'],
