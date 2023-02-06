@@ -1,16 +1,14 @@
-mutation addProject($name: String!) {
-  addProject(name: $name) {
+input ProjectMemberInput {
+  userId: String!
+}
+
+mutation addProject($name: String!, $members: [ProjectMemberInput!]) {
+  addProject(name: $name, members: $members) {
     name
     client
     domain
     id
     projectId
-    stages {
-      stageId
-      name
-      category
-      phase
-    }
   }
 }
 
@@ -21,6 +19,7 @@ query getProjects {
     name
     client
     imageUrl
+    metaFields
   }
 }
 

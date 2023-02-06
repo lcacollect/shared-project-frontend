@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material'
-import React, { Fragment } from 'react'
+import React from 'react'
 import { GraphQlProjectMember } from '../../../dataAccess'
 
 interface TeamProps {

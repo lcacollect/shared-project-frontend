@@ -137,6 +137,7 @@ export type GraphQlProjectSource = {
   __typename?: 'GraphQLProjectSource'
   author: GraphQlProjectMember
   authorId: Scalars['String']
+  data?: Maybe<GraphQlSourceFile>
   dataId: Scalars['String']
   elements?: Maybe<Array<GraphQlSchemaElement>>
   fileUrl?: Maybe<Scalars['String']>
@@ -147,13 +148,6 @@ export type GraphQlProjectSource = {
   projectId: Scalars['String']
   type: ProjectSourceType
   updated: Scalars['DateTime']
-}
-
-export type GraphQlProjectSourceFile = {
-  __typename?: 'GraphQLProjectSourceFile'
-  dataId: Scalars['String']
-  headers: Scalars['JSON']
-  rows: Scalars['JSON']
 }
 
 export type GraphQlProjectStage = {
@@ -214,6 +208,12 @@ export type GraphQlSchemaTemplate = {
   id: Scalars['String']
   name: Scalars['String']
   schema?: Maybe<GraphQlReportingSchema>
+}
+
+export type GraphQlSourceFile = {
+  __typename?: 'GraphQLSourceFile'
+  headers: Array<Scalars['String']>
+  rows: Scalars['JSON']
 }
 
 export type GraphQlTag = {
@@ -614,11 +614,7 @@ export type ProjectMemberFilters = {
 }
 
 export type ProjectMemberInput = {
-  company: Scalars['String']
-  email: Scalars['String']
-  id?: InputMaybe<Scalars['String']>
-  lastLogin?: InputMaybe<Scalars['Date']>
-  name: Scalars['String']
+  userId: Scalars['String']
 }
 
 export type ProjectSourceFilters = {
@@ -658,8 +654,6 @@ export type Query = {
    * Filters can be used to query unique members of the Project
    */
   projectMembers: Array<GraphQlProjectMember>
-  /** Get source files with a list of data ids */
-  projectSourceFiles: Array<GraphQlProjectSourceFile>
   /** Get all sources associated with a project */
   projectSources: Array<GraphQlProjectSource>
   /** Get all life cycle stage associated with a project */
@@ -703,11 +697,6 @@ export type QueryProjectGroupsArgs = {
 export type QueryProjectMembersArgs = {
   filters?: InputMaybe<ProjectMemberFilters>
   projectId: Scalars['String']
-}
-
-export type QueryProjectSourceFilesArgs = {
-  dataIds?: InputMaybe<Array<Scalars['String']>>
-  type?: InputMaybe<ProjectSourceType>
 }
 
 export type QueryProjectSourcesArgs = {
@@ -920,7 +909,6 @@ export type ResolversTypes = {
     | ResolversTypes['GraphQLProjectGroup']
     | ResolversTypes['GraphQLProjectMember']
   GraphQLProjectSource: ResolverTypeWrapper<GraphQlProjectSource>
-  GraphQLProjectSourceFile: ResolverTypeWrapper<GraphQlProjectSourceFile>
   GraphQLProjectStage: ResolverTypeWrapper<GraphQlProjectStage>
   GraphQLReportingCreationSchema: ResolverTypeWrapper<GraphQlReportingCreationSchema>
   GraphQLReportingSchema: ResolverTypeWrapper<GraphQlReportingSchema>
@@ -932,6 +920,7 @@ export type ResolversTypes = {
     | ResolversTypes['GraphQLSchemaCategory']
     | ResolversTypes['GraphQLSchemaElement']
   GraphQLSchemaTemplate: ResolverTypeWrapper<GraphQlSchemaTemplate>
+  GraphQLSourceFile: ResolverTypeWrapper<GraphQlSourceFile>
   GraphQLTag: ResolverTypeWrapper<GraphQlTag>
   GraphQLTask: ResolverTypeWrapper<
     Omit<GraphQlTask, 'assignee' | 'item'> & {
@@ -986,7 +975,6 @@ export type ResolversParentTypes = {
     | ResolversParentTypes['GraphQLProjectGroup']
     | ResolversParentTypes['GraphQLProjectMember']
   GraphQLProjectSource: GraphQlProjectSource
-  GraphQLProjectSourceFile: GraphQlProjectSourceFile
   GraphQLProjectStage: GraphQlProjectStage
   GraphQLReportingCreationSchema: GraphQlReportingCreationSchema
   GraphQLReportingSchema: GraphQlReportingSchema
@@ -998,6 +986,7 @@ export type ResolversParentTypes = {
     | ResolversParentTypes['GraphQLSchemaCategory']
     | ResolversParentTypes['GraphQLSchemaElement']
   GraphQLSchemaTemplate: GraphQlSchemaTemplate
+  GraphQLSourceFile: GraphQlSourceFile
   GraphQLTag: GraphQlTag
   GraphQLTask: Omit<GraphQlTask, 'assignee' | 'item'> & {
     assignee: ResolversParentTypes['GraphQLProjectMemberGraphQLProjectGroup']
@@ -1135,6 +1124,7 @@ export type GraphQlProjectSourceResolvers<
 > = {
   author?: Resolver<ResolversTypes['GraphQLProjectMember'], ParentType, ContextType>
   authorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  data?: Resolver<Maybe<ResolversTypes['GraphQLSourceFile']>, ParentType, ContextType>
   dataId?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   elements?: Resolver<Maybe<Array<ResolversTypes['GraphQLSchemaElement']>>, ParentType, ContextType>
   fileUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
@@ -1145,16 +1135,6 @@ export type GraphQlProjectSourceResolvers<
   projectId?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   type?: Resolver<ResolversTypes['ProjectSourceType'], ParentType, ContextType>
   updated?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
-}
-
-export type GraphQlProjectSourceFileResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['GraphQLProjectSourceFile'] = ResolversParentTypes['GraphQLProjectSourceFile'],
-> = {
-  dataId?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-  headers?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>
-  rows?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }
 
@@ -1238,6 +1218,15 @@ export type GraphQlSchemaTemplateResolvers<
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   schema?: Resolver<Maybe<ResolversTypes['GraphQLReportingSchema']>, ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}
+
+export type GraphQlSourceFileResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['GraphQLSourceFile'] = ResolversParentTypes['GraphQLSourceFile'],
+> = {
+  headers?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>
+  rows?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }
 
@@ -1574,12 +1563,6 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryProjectMembersArgs, 'filters' | 'projectId'>
   >
-  projectSourceFiles?: Resolver<
-    Array<ResolversTypes['GraphQLProjectSourceFile']>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryProjectSourceFilesArgs, 'dataIds' | 'type'>
-  >
   projectSources?: Resolver<
     Array<ResolversTypes['GraphQLProjectSource']>,
     ParentType,
@@ -1647,7 +1630,6 @@ export type Resolvers<ContextType = any> = {
   GraphQLProjectMember?: GraphQlProjectMemberResolvers<ContextType>
   GraphQLProjectMemberGraphQLProjectGroup?: GraphQlProjectMemberGraphQlProjectGroupResolvers<ContextType>
   GraphQLProjectSource?: GraphQlProjectSourceResolvers<ContextType>
-  GraphQLProjectSourceFile?: GraphQlProjectSourceFileResolvers<ContextType>
   GraphQLProjectStage?: GraphQlProjectStageResolvers<ContextType>
   GraphQLReportingCreationSchema?: GraphQlReportingCreationSchemaResolvers<ContextType>
   GraphQLReportingSchema?: GraphQlReportingSchemaResolvers<ContextType>
@@ -1655,6 +1637,7 @@ export type Resolvers<ContextType = any> = {
   GraphQLSchemaElement?: GraphQlSchemaElementResolvers<ContextType>
   GraphQLSchemaElementGraphQLSchemaCategory?: GraphQlSchemaElementGraphQlSchemaCategoryResolvers<ContextType>
   GraphQLSchemaTemplate?: GraphQlSchemaTemplateResolvers<ContextType>
+  GraphQLSourceFile?: GraphQlSourceFileResolvers<ContextType>
   GraphQLTag?: GraphQlTagResolvers<ContextType>
   GraphQLTask?: GraphQlTaskResolvers<ContextType>
   GraphQLUserAccount?: GraphQlUserAccountResolvers<ContextType>
@@ -1665,6 +1648,7 @@ export type Resolvers<ContextType = any> = {
 
 export type AddProjectMutationVariables = Exact<{
   name: Scalars['String']
+  members?: InputMaybe<Array<ProjectMemberInput> | ProjectMemberInput>
 }>
 
 export type AddProjectMutation = {
@@ -1676,13 +1660,6 @@ export type AddProjectMutation = {
     domain?: ProjectDomain | null
     id: string
     projectId?: string | null
-    stages?: Array<{
-      __typename?: 'GraphQLProjectStage'
-      stageId: string
-      name: string
-      category: string
-      phase: string
-    }> | null
   }
 }
 
@@ -1697,6 +1674,7 @@ export type GetProjectsQuery = {
     name: string
     client?: string | null
     imageUrl?: string | null
+    metaFields?: any | null
   }>
 }
 
@@ -2017,19 +1995,13 @@ export type GetSchemaTemplatesQuery = {
 }
 
 export const AddProjectDocument = gql`
-  mutation addProject($name: String!) {
-    addProject(name: $name) {
+  mutation addProject($name: String!, $members: [ProjectMemberInput!]) {
+    addProject(name: $name, members: $members) {
       name
       client
       domain
       id
       projectId
-      stages {
-        stageId
-        name
-        category
-        phase
-      }
     }
   }
 `
@@ -2049,6 +2021,7 @@ export type AddProjectMutationFn = Apollo.MutationFunction<AddProjectMutation, A
  * const [addProjectMutation, { data, loading, error }] = useAddProjectMutation({
  *   variables: {
  *      name: // value for 'name'
+ *      members: // value for 'members'
  *   },
  * });
  */
@@ -2069,6 +2042,7 @@ export const GetProjectsDocument = gql`
       name
       client
       imageUrl
+      metaFields
     }
   }
 `
