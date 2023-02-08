@@ -29,13 +29,14 @@ import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
-import { CardTitle, DataFetchWrapper, PaperPage, NoRowsOverlay } from '@lcacollect/components'
+import { CardTitle, DataFetchWrapper, PaperPage, NoRowsOverlay, Loading } from '@lcacollect/components'
 
 export const MembersTable = () => {
   const { projectId } = useParams()
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
   const [rows, setRows] = useState<Omit<GraphQlProjectMember, 'projectId'>[]>([])
   const [snackbar, setSnackbar] = useState<Pick<AlertProps, 'children' | 'severity'> | null>(null)
+  const [loadingRows, setLoadingRows] = useState<{ [id: string]: boolean }>({})
   const { data, error, loading } = useGetProjectMembersQuery({
     variables: { projectId: projectId as string },
     skip: !projectId,
@@ -108,10 +109,17 @@ export const MembersTable = () => {
 
   const handleSaveClick = useCallback(
     (id: GridRowId) => () => {
+      setLoadingRows({ ...loadingRows, [id]: true })
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
     },
-    [rowModesModel],
+    [rowModesModel, loadingRows],
   )
+
+  useEffect(() => {
+    if (!loading) {
+      setLoadingRows({})
+    }
+  }, [loading])
 
   const handleDeleteClick = useCallback(
     (id: GridRowId) => async () => {
@@ -309,23 +317,36 @@ export const MembersTable = () => {
           ]
         }
 
-        return [
-          <GridActionsCellItem
-            key={0}
-            icon={<EditIcon />}
-            label='Edit'
-            className='textPrimary'
-            onClick={handleEditClick(id)}
-            color='inherit'
-          />,
-          <GridActionsCellItem
-            key={1}
-            icon={<DeleteIcon />}
-            label='Delete'
-            onClick={handleDeleteClick(id)}
-            color='inherit'
-          />,
-        ]
+        if (loadingRows[id]) {
+          return [
+            <GridActionsCellItem
+              key={0}
+              icon={<Loading />}
+              label='Loading'
+              className='textPrimary'
+              color='inherit'
+              disabled={true}
+            />,
+          ]
+        } else {
+          return [
+            <GridActionsCellItem
+              key={0}
+              icon={<EditIcon />}
+              label='Edit'
+              className='textPrimary'
+              onClick={handleEditClick(id)}
+              color='inherit'
+            />,
+            <GridActionsCellItem
+              key={1}
+              icon={<DeleteIcon />}
+              label='Delete'
+              onClick={handleDeleteClick(id)}
+              color='inherit'
+            />,
+          ]
+        }
       },
     },
   ]
