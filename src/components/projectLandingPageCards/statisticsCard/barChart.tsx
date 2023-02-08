@@ -71,7 +71,7 @@ function aggregateTasksByAssignedGroupName(tasks: Tasks) {
     const category =
       current.assignee.__typename === 'GraphQLProjectGroup'
         ? current.assignee.name
-        : current.assignee.projectGroups?.[0]?.name ?? 'Unassigned'
+        : current.assignee.projectGroups?.[0]?.name ?? 'Not Assigned to a Group'
     const newArray = aggregated[category] ?? []
     newArray.push(current)
     return {
