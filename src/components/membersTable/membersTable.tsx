@@ -308,23 +308,36 @@ export const MembersTable = () => {
           ]
         }
 
-        return [
-          <GridActionsCellItem
-            key={0}
-            icon={loadingRows[id] ? <Loading /> : <EditIcon />}
-            label='Edit'
-            className='textPrimary'
-            onClick={handleEditClick(id)}
-            color='inherit'
-          />,
-          <GridActionsCellItem
-            key={1}
-            icon={loadingRows[id] ? <Loading /> : <DeleteIcon />}
-            label='Delete'
-            onClick={handleDeleteClick(id)}
-            color='inherit'
-          />,
-        ]
+        if (loadingRows[id]) {
+          return [
+            <GridActionsCellItem
+              key={0}
+              icon={<Loading />}
+              label='Loading'
+              className='textPrimary'
+              color='inherit'
+              disabled={true}
+            />,
+          ]
+        } else {
+          return [
+            <GridActionsCellItem
+              key={0}
+              icon={<EditIcon />}
+              label='Edit'
+              className='textPrimary'
+              onClick={handleEditClick(id)}
+              color='inherit'
+            />,
+            <GridActionsCellItem
+              key={1}
+              icon={<DeleteIcon />}
+              label='Delete'
+              onClick={handleDeleteClick(id)}
+              color='inherit'
+            />,
+          ]
+        }
       },
     },
   ]
