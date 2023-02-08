@@ -1,6 +1,7 @@
 import { Alert, AlertProps, LinearProgress, Snackbar } from '@mui/material'
 
 import {
+  GraphQlProject,
   useAddProjectMutation,
   useDeleteProjectMutation,
   useGetAccountQuery,
@@ -17,18 +18,17 @@ import {
   GridToolbarFilterButton,
   GridToolbarColumnsButton,
   GridRowParams,
-  GridColumns,
 } from '@mui/x-data-grid-pro'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import { GraphQLErrors } from '@apollo/client/errors'
 
 export const ProjectsTable = () => {
   const [snackbar, setSnackbar] = useState<Pick<AlertProps, 'children' | 'severity'> | null>(null)
-  const [addProject] = useAddProjectMutation({ variables: { name: '' }, refetchQueries: ['getProjects'] })
   const { data: projectData, error: projectError, loading: projectLoading } = useGetProjectsQuery()
   const projects = useMemo(() => projectData?.projects, [projectData])
   const { data: accountData, error: accountError, loading: accountLoading } = useGetAccountQuery()
   const [deleteProject] = useDeleteProjectMutation({ refetchQueries: ['getProjects'] })
+  const [addProject] = useAddProjectMutation()
 
   const navigate = useNavigate()
 
@@ -38,7 +38,16 @@ export const ProjectsTable = () => {
   )
 
   const handleCreateProject = async () => {
-    const { data, errors } = await addProject()
+    if (!accountData?.account.id) {
+      const error = 'Account details not loaded. Please try again'
+      console.error(error)
+      setSnackbar({ children: error, severity: 'error' })
+      return null
+    }
+    const { data, errors } = await addProject({
+      variables: { name: '', members: [{ userId: accountData?.account.id as string }] },
+      refetchQueries: ['getProjects'],
+    })
     if (errors) {
       handleErrors(errors)
     } else {
@@ -80,8 +89,8 @@ export const ProjectsTable = () => {
     })
   }
 
-  const columns = useMemo(() => {
-    const _columns: GridColumns = [
+  const columns = useMemo(
+    () => [
       {
         field: 'id',
         headerName: 'ID',
@@ -102,38 +111,35 @@ export const ProjectsTable = () => {
         headerName: 'Client',
         flex: 2,
       },
-    ]
-    if (isAdmin) {
-      _columns.push({
+      {
         field: 'actions',
         type: 'actions',
         headerName: 'Actions',
         flex: 1,
+        maxWidth: 100,
         cellClassName: 'actions',
-        getActions: ({ id }: { id: GridRowId }) => {
-          return [
-            <GridActionsCellItem
-              key={0}
-              icon={<DeleteIcon />}
-              label='Delete'
-              onClick={() => handleDeleteProject(id)}
-              color='inherit'
-            />,
-          ]
+        getActions: ({ id, row }: { id: GridRowId; row: GraphQlProject }) => {
+          if (row.metaFields.owner === accountData?.account.id || isAdmin) {
+            return [
+              <GridActionsCellItem
+                key={0}
+                icon={<DeleteIcon />}
+                label='Delete'
+                onClick={() => handleDeleteProject(id)}
+                color='inherit'
+              />,
+            ]
+          }
+          return []
         },
-      })
-    }
-    return _columns
-  }, [isAdmin])
+      },
+    ],
+    [accountData, isAdmin],
+  )
 
   return (
     <PaperPage data-testid='projects-table'>
-      <CardTitle
-        title='Projects'
-        size='large'
-        onClickHandler={isAdmin ? handleCreateProject : undefined}
-        data-testid='project-table'
-      />
+      <CardTitle title='Projects' size='large' onClickHandler={handleCreateProject} data-testid='project-table' />
       <div style={{ height: 400, width: '100%' }}>
         <DataFetchWrapper error={projectError || accountError}>
           <DataGridPro
