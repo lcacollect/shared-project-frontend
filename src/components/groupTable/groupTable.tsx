@@ -21,6 +21,7 @@ import {
   GridRowModesModel,
   GridRowParams,
   GridValueOptionsParams,
+  GridValueFormatterParams,
   MuiEvent,
 } from '@mui/x-data-grid-pro'
 import SaveIcon from '@mui/icons-material/Save'
@@ -198,10 +199,17 @@ export const GroupsTable = () => {
 
   const leadValueOptions = (cell: GridValueOptionsParams) => {
     const options = projectMembers?.filter((member) => member.projectGroups?.find((group) => group.id == cell.id))
-    if (options) {
+    if (options?.[0]) {
       return options.map((option) => ({ value: option.id, label: option.name }))
     }
-    return []
+    return [{ value: '', label: 'No members in group' }]
+  }
+
+  const valueFormatterOptions = (cell: GridValueFormatterParams) => {
+    const options = projectMembers?.find((member) => member.id === cell.value)?.name
+    if (options) {
+      return options
+    }
   }
 
   const columns: GridColumns = [
@@ -222,7 +230,7 @@ export const GroupsTable = () => {
       type: 'singleSelect',
       valueOptions: leadValueOptions,
       flex: 2,
-      valueFormatter: (cell) => projectMembers?.find((member) => member.id === cell.value)?.name,
+      valueFormatter: valueFormatterOptions, // (cell) => projectMembers?.find((member) => member.id === cell.value)?.name,
     },
     {
       field: 'actions',
