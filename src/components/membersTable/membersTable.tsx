@@ -12,6 +12,7 @@ import {
   GridRowParams,
   GridValueFormatterParams,
   MuiEvent,
+  GridValueOptionsParams,
 } from '@mui/x-data-grid-pro'
 import {
   GetProjectMembersDocument,
@@ -20,7 +21,6 @@ import {
   useAddProjectMembersToGroupMutation,
   useDeleteProjectMemberMutation,
   useGetProjectGroupsQuery,
-  GridValueOptionsParams,
   useGetProjectMembersQuery,
   useRemoveProjectMembersFromGroupMutation,
 } from '../../dataAccess'
