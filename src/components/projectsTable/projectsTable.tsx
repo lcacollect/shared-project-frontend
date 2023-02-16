@@ -22,7 +22,12 @@ import {
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import { GraphQLErrors } from '@apollo/client/errors'
 
-export const ProjectsTable = () => {
+interface ProjectsTableProps {
+  canCreateProjects?: boolean
+  createButtonToolTip?: string
+}
+
+export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: ProjectsTableProps) => {
   const [snackbar, setSnackbar] = useState<Pick<AlertProps, 'children' | 'severity'> | null>(null)
   const { data: projectData, error: projectError, loading: projectLoading } = useGetProjectsQuery()
   const projects = useMemo(() => projectData?.projects, [projectData])
@@ -139,7 +144,14 @@ export const ProjectsTable = () => {
 
   return (
     <PaperPage data-testid='projects-table'>
-      <CardTitle title='Projects' size='large' onClickHandler={handleCreateProject} data-testid='project-table' />
+      <CardTitle
+        title='Projects'
+        size='large'
+        onClickHandler={handleCreateProject}
+        data-testid='project-table'
+        disableButton={!canCreateProjects}
+        tooltipText={createButtonToolTip}
+      />
       <div style={{ height: 400, width: '100%' }}>
         <DataFetchWrapper error={projectError || accountError}>
           <DataGridPro
