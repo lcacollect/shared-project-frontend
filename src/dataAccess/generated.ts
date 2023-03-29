@@ -626,6 +626,7 @@ export type ProjectSourceFilters = {
 export enum ProjectSourceType {
   Csv = 'CSV',
   Speckle = 'SPECKLE',
+  Xslx = 'XSLX',
 }
 
 export type ProjectStageInput = {
@@ -1011,6 +1012,18 @@ export type ResolversParentTypes = {
   TaskFilters: TaskFilters
   taskItem: TaskItem
 }
+
+export type DeferDirectiveArgs = {
+  if?: Scalars['Boolean']
+  label?: Maybe<Scalars['String']>
+}
+
+export type DeferDirectiveResolver<Result, Parent, ContextType = any, Args = DeferDirectiveArgs> = DirectiveResolverFn<
+  Result,
+  Parent,
+  ContextType,
+  Args
+>
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date'
@@ -1646,9 +1659,14 @@ export type Resolvers<ContextType = any> = {
   Query?: QueryResolvers<ContextType>
 }
 
+export type DirectiveResolvers<ContextType = any> = {
+  defer?: DeferDirectiveResolver<any, any, ContextType>
+}
+
 export type AddProjectMutationVariables = Exact<{
   name: Scalars['String']
   members?: InputMaybe<Array<ProjectMemberInput> | ProjectMemberInput>
+  metaFields?: InputMaybe<Scalars['JSON']>
 }>
 
 export type AddProjectMutation = {
@@ -1660,6 +1678,7 @@ export type AddProjectMutation = {
     domain?: ProjectDomain | null
     id: string
     projectId?: string | null
+    metaFields?: any | null
   }
 }
 
@@ -1995,13 +2014,14 @@ export type GetSchemaTemplatesQuery = {
 }
 
 export const AddProjectDocument = gql`
-  mutation addProject($name: String!, $members: [ProjectMemberInput!]) {
-    addProject(name: $name, members: $members) {
+  mutation addProject($name: String!, $members: [ProjectMemberInput!], $metaFields: JSON = { domain: "design" }) {
+    addProject(name: $name, members: $members, metaFields: $metaFields) {
       name
       client
       domain
       id
       projectId
+      metaFields
     }
   }
 `
@@ -2022,6 +2042,7 @@ export type AddProjectMutationFn = Apollo.MutationFunction<AddProjectMutation, A
  *   variables: {
  *      name: // value for 'name'
  *      members: // value for 'members'
+ *      metaFields: // value for 'metaFields'
  *   },
  * });
  */
