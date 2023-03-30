@@ -1666,7 +1666,7 @@ export type DirectiveResolvers<ContextType = any> = {
 export type AddProjectMutationVariables = Exact<{
   name: Scalars['String']
   members?: InputMaybe<Array<ProjectMemberInput> | ProjectMemberInput>
-  metaFields?: InputMaybe<Scalars['JSON']>
+  domain: Scalars['String']
 }>
 
 export type AddProjectMutation = {
@@ -2014,8 +2014,8 @@ export type GetSchemaTemplatesQuery = {
 }
 
 export const AddProjectDocument = gql`
-  mutation addProject($name: String!, $members: [ProjectMemberInput!], $metaFields: JSON = { domain: "design" }) {
-    addProject(name: $name, members: $members, metaFields: $metaFields) {
+  mutation addProject($name: String!, $members: [ProjectMemberInput!], $domain: String!) {
+    addProject(name: $name, members: $members, metaFields: { domain: [$domain] }) {
       name
       client
       domain
@@ -2042,7 +2042,7 @@ export type AddProjectMutationFn = Apollo.MutationFunction<AddProjectMutation, A
  *   variables: {
  *      name: // value for 'name'
  *      members: // value for 'members'
- *      metaFields: // value for 'metaFields'
+ *      domain: // value for 'domain'
  *   },
  * });
  */

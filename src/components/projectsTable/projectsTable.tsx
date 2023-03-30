@@ -21,6 +21,7 @@ import {
 } from '@mui/x-data-grid-pro'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import { GraphQLErrors } from '@apollo/client/errors'
+import { DOMAIN_NAME } from '../../config'
 
 interface ProjectsTableProps {
   canCreateProjects?: boolean
@@ -50,7 +51,7 @@ export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: Projec
       return null
     }
     const { data, errors } = await addProject({
-      variables: { name: '', members: [{ userId: accountData?.account.id as string }] },
+      variables: { name: '', members: [{ userId: accountData?.account.id as string }], domain: DOMAIN_NAME },
       refetchQueries: ['getProjects'],
     })
     if (errors) {

@@ -2,8 +2,8 @@ input ProjectMemberInput {
   userId: String!
 }
 
-mutation addProject($name: String!, $members: [ProjectMemberInput!], $metaFields: JSON = { domain: "design" }) {
-  addProject(name: $name, members: $members, metaFields: $metaFields) {
+mutation addProject($name: String!, $members: [ProjectMemberInput!], $domain: String!) {
+  addProject(name: $name, members: $members, metaFields: { domain: [$domain] }) {
     name
     client
     domain
