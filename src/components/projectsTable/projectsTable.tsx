@@ -6,8 +6,9 @@ import {
   useDeleteProjectMutation,
   useGetAccountQuery,
   useGetProjectsQuery,
+  GetProjectsDocument,
 } from '../../dataAccess'
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CardTitle, DataFetchWrapper, NoRowsOverlay, PaperPage } from '@lcacollect/components'
 import {
@@ -30,10 +31,16 @@ interface ProjectsTableProps {
 
 export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: ProjectsTableProps) => {
   const [snackbar, setSnackbar] = useState<Pick<AlertProps, 'children' | 'severity'> | null>(null)
-  const { data: projectData, error: projectError, loading: projectLoading } = useGetProjectsQuery()
+  const {
+    data: projectData,
+    error: projectError,
+    loading: projectLoading,
+  } = useGetProjectsQuery({ variables: { jsonData: JSON.stringify({ domain: DOMAIN_NAME }) } })
   const projects = useMemo(() => projectData?.projects, [projectData])
   const { data: accountData, error: accountError, loading: accountLoading } = useGetAccountQuery()
-  const [deleteProject] = useDeleteProjectMutation({ refetchQueries: ['getProjects'] })
+  const [deleteProject] = useDeleteProjectMutation({
+    refetchQueries: [{ query: GetProjectsDocument, variables: { jsonData: JSON.stringify({ domain: DOMAIN_NAME }) } }],
+  })
   const [addProject] = useAddProjectMutation()
 
   const navigate = useNavigate()
@@ -52,7 +59,9 @@ export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: Projec
     }
     const { data, errors } = await addProject({
       variables: { name: '', members: [{ userId: accountData?.account.id as string }], domain: DOMAIN_NAME },
-      refetchQueries: ['getProjects'],
+      refetchQueries: [
+        { query: GetProjectsDocument, variables: { jsonData: JSON.stringify({ domain: DOMAIN_NAME }) } },
+      ],
     })
     if (errors) {
       handleErrors(errors)

@@ -13,8 +13,8 @@ mutation addProject($name: String!, $members: [ProjectMemberInput!], $domain: St
   }
 }
 
-query getProjects {
-  projects {
+query getProjects($jsonData: String!) {
+  projects(filters: { metaFields: { jsonContains: $jsonData } }) {
     id
     projectId
     name

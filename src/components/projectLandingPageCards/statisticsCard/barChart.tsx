@@ -20,9 +20,9 @@ export const LandingPageStatisticsBarChart: React.FC<{ projectId: string }> = (p
     error: tasksError,
   } = useGetTasksQuery({
     variables: {
-      reportingSchemaId: data?.reportingSchemas[0].id as string,
+      reportingSchemaId: data?.reportingSchemas[0]?.id as string,
     },
-    skip: !data?.reportingSchemas,
+    skip: !data?.reportingSchemas[0]?.id,
   })
 
   const chartData = useMemo(() => {

@@ -3,10 +3,13 @@ import { RecentProjectCard } from '../recentProjectCard'
 import React from 'react'
 import { useGetProjectsQuery } from '../../dataAccess'
 import { CardTitle, DataFetchWrapper, PaperPage } from '@lcacollect/components'
+import { DOMAIN_NAME } from '../../config'
 
 export const RecentProjectsPaper = () => {
   const recentProjects = localStorage.getItem('recentProjects')?.split(',')
-  const { data, error, loading } = useGetProjectsQuery()
+  const { data, error, loading } = useGetProjectsQuery({
+    variables: { jsonData: JSON.stringify({ domain: DOMAIN_NAME }) },
+  })
   const projects = data?.projects
   return (
     <PaperPage data-testid='recent-projects' sx={{ marginTop: 5 }}>

@@ -50,6 +50,7 @@ export type FilterOptions = {
   isAnyOf?: InputMaybe<Array<Scalars['String']>>
   isEmpty?: InputMaybe<Scalars['Boolean']>
   isNotEmpty?: InputMaybe<Scalars['Boolean']>
+  jsonContains?: InputMaybe<Scalars['String']>
   startsWith?: InputMaybe<Scalars['String']>
 }
 
@@ -421,7 +422,7 @@ export type MutationAddSchemaElementArgs = {
 
 export type MutationAddSchemaElementFromSourceArgs = {
   objectIds: Array<Scalars['String']>
-  quantities?: InputMaybe<Array<Scalars['String']>>
+  quantities?: InputMaybe<Array<Scalars['Float']>>
   schemaCategoryId: Scalars['String']
   sourceId: Scalars['String']
   units?: InputMaybe<Array<Unit>>
@@ -589,6 +590,7 @@ export enum ProjectDomain {
 
 export type ProjectFilters = {
   id?: InputMaybe<FilterOptions>
+  metaFields?: InputMaybe<FilterOptions>
   name?: InputMaybe<FilterOptions>
   projectId?: InputMaybe<FilterOptions>
 }
@@ -626,7 +628,7 @@ export type ProjectSourceFilters = {
 export enum ProjectSourceType {
   Csv = 'CSV',
   Speckle = 'SPECKLE',
-  Xslx = 'XSLX',
+  Xlsx = 'XLSX',
 }
 
 export type ProjectStageInput = {
@@ -1682,7 +1684,9 @@ export type AddProjectMutation = {
   }
 }
 
-export type GetProjectsQueryVariables = Exact<{ [key: string]: never }>
+export type GetProjectsQueryVariables = Exact<{
+  jsonData: Scalars['String']
+}>
 
 export type GetProjectsQuery = {
   __typename?: 'Query'
@@ -2056,8 +2060,8 @@ export type AddProjectMutationHookResult = ReturnType<typeof useAddProjectMutati
 export type AddProjectMutationResult = Apollo.MutationResult<AddProjectMutation>
 export type AddProjectMutationOptions = Apollo.BaseMutationOptions<AddProjectMutation, AddProjectMutationVariables>
 export const GetProjectsDocument = gql`
-  query getProjects {
-    projects {
+  query getProjects($jsonData: String!) {
+    projects(filters: { metaFields: { jsonContains: $jsonData } }) {
       id
       projectId
       name
@@ -2080,12 +2084,11 @@ export const GetProjectsDocument = gql`
  * @example
  * const { data, loading, error } = useGetProjectsQuery({
  *   variables: {
+ *      jsonData: // value for 'jsonData'
  *   },
  * });
  */
-export function useGetProjectsQuery(
-  baseOptions?: Apollo.QueryHookOptions<GetProjectsQuery, GetProjectsQueryVariables>,
-) {
+export function useGetProjectsQuery(baseOptions: Apollo.QueryHookOptions<GetProjectsQuery, GetProjectsQueryVariables>) {
   const options = { ...defaultOptions, ...baseOptions }
   return Apollo.useQuery<GetProjectsQuery, GetProjectsQueryVariables>(GetProjectsDocument, options)
 }
