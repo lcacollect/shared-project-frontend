@@ -11,11 +11,14 @@ import {
 import { useGetProjectsQuery, GraphQlProject } from '../../dataAccess'
 import { CardTitle, ErrorMessage, PaperPage } from '@lcacollect/components'
 import { useParams } from 'react-router-dom'
+import { DOMAIN_NAME } from '../../config'
 
 export const ProjectLandingPage = () => {
   const params = useParams()
 
-  const { data: projectData, error: projectError } = useGetProjectsQuery()
+  const { data: projectData, error: projectError } = useGetProjectsQuery({
+    variables: { jsonData: JSON.stringify({ domain: DOMAIN_NAME }) },
+  })
 
   const projectToRender = useMemo(() => {
     return projectData?.projects.find((project: GraphQlProject) => project.id === params['projectId'])

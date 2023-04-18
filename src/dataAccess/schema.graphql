@@ -2,18 +2,19 @@ input ProjectMemberInput {
   userId: String!
 }
 
-mutation addProject($name: String!, $members: [ProjectMemberInput!]) {
-  addProject(name: $name, members: $members) {
+mutation addProject($name: String!, $members: [ProjectMemberInput!], $domain: String!) {
+  addProject(name: $name, members: $members, metaFields: { domain: [$domain] }) {
     name
     client
     domain
     id
     projectId
+    metaFields
   }
 }
 
-query getProjects {
-  projects {
+query getProjects($jsonData: String!) {
+  projects(filters: { metaFields: { jsonContains: $jsonData } }) {
     id
     projectId
     name
