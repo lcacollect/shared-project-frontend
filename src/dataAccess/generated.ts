@@ -256,6 +256,10 @@ export type GraphQlUserAccount = {
   tenantId: Scalars['String']
 }
 
+export type LifeCycleStageInput = {
+  stageId: Scalars['String']
+}
+
 export type Mutation = {
   __typename?: 'Mutation'
   /** Add a comment to a task */
@@ -358,7 +362,7 @@ export type MutationAddProjectArgs = {
   metaFields?: InputMaybe<Scalars['JSON']>
   name: Scalars['String']
   projectId?: InputMaybe<Scalars['String']>
-  stages?: InputMaybe<Array<ProjectStageInput>>
+  stages?: InputMaybe<Array<LifeCycleStageInput>>
 }
 
 export type MutationAddProjectGroupArgs = {
@@ -629,13 +633,6 @@ export enum ProjectSourceType {
   Csv = 'CSV',
   Speckle = 'SPECKLE',
   Xlsx = 'XLSX',
-}
-
-export type ProjectStageInput = {
-  id: Scalars['String']
-  lifecyclePhase: Scalars['String']
-  name: Scalars['String']
-  stage: Scalars['String']
 }
 
 export type Query = {
@@ -933,6 +930,7 @@ export type ResolversTypes = {
   >
   GraphQLUserAccount: ResolverTypeWrapper<GraphQlUserAccount>
   JSON: ResolverTypeWrapper<Scalars['JSON']>
+  LifeCycleStageInput: LifeCycleStageInput
   Mutation: ResolverTypeWrapper<{}>
   ProjectDomain: ProjectDomain
   ProjectFilters: ProjectFilters
@@ -942,7 +940,6 @@ export type ResolversTypes = {
   ProjectMemberInput: ProjectMemberInput
   ProjectSourceFilters: ProjectSourceFilters
   ProjectSourceType: ProjectSourceType
-  ProjectStageInput: ProjectStageInput
   Query: ResolverTypeWrapper<{}>
   ReportingSchemaFilters: ReportingSchemaFilters
   SchemaCategoryFilters: SchemaCategoryFilters
@@ -997,6 +994,7 @@ export type ResolversParentTypes = {
   }
   GraphQLUserAccount: GraphQlUserAccount
   JSON: Scalars['JSON']
+  LifeCycleStageInput: LifeCycleStageInput
   Mutation: {}
   ProjectFilters: ProjectFilters
   ProjectGroupFilters: ProjectGroupFilters
@@ -1004,7 +1002,6 @@ export type ResolversParentTypes = {
   ProjectMemberFilters: ProjectMemberFilters
   ProjectMemberInput: ProjectMemberInput
   ProjectSourceFilters: ProjectSourceFilters
-  ProjectStageInput: ProjectStageInput
   Query: {}
   ReportingSchemaFilters: ReportingSchemaFilters
   SchemaCategoryFilters: SchemaCategoryFilters
@@ -1669,6 +1666,7 @@ export type AddProjectMutationVariables = Exact<{
   name: Scalars['String']
   members?: InputMaybe<Array<ProjectMemberInput> | ProjectMemberInput>
   domain: Scalars['String']
+  stages?: InputMaybe<Array<LifeCycleStageInput> | LifeCycleStageInput>
 }>
 
 export type AddProjectMutation = {
@@ -2018,8 +2016,13 @@ export type GetSchemaTemplatesQuery = {
 }
 
 export const AddProjectDocument = gql`
-  mutation addProject($name: String!, $members: [ProjectMemberInput!], $domain: String!) {
-    addProject(name: $name, members: $members, metaFields: { domain: [$domain] }) {
+  mutation addProject(
+    $name: String!
+    $members: [ProjectMemberInput!]
+    $domain: String!
+    $stages: [LifeCycleStageInput!]
+  ) {
+    addProject(name: $name, members: $members, metaFields: { domain: [$domain] }, stages: $stages) {
       name
       client
       domain
@@ -2047,6 +2050,7 @@ export type AddProjectMutationFn = Apollo.MutationFunction<AddProjectMutation, A
  *      name: // value for 'name'
  *      members: // value for 'members'
  *      domain: // value for 'domain'
+ *      stages: // value for 'stages'
  *   },
  * });
  */
