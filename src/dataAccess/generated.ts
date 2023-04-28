@@ -1665,7 +1665,7 @@ export type DirectiveResolvers<ContextType = any> = {
 export type AddProjectMutationVariables = Exact<{
   name: Scalars['String']
   members?: InputMaybe<Array<ProjectMemberInput> | ProjectMemberInput>
-  domain: Scalars['String']
+  metaFields?: InputMaybe<Scalars['JSON']>
   stages?: InputMaybe<Array<LifeCycleStageInput> | LifeCycleStageInput>
 }>
 
@@ -1683,7 +1683,7 @@ export type AddProjectMutation = {
 }
 
 export type GetProjectsQueryVariables = Exact<{
-  jsonData: Scalars['String']
+  projectFilters?: InputMaybe<ProjectFilters>
 }>
 
 export type GetProjectsQuery = {
@@ -2019,10 +2019,10 @@ export const AddProjectDocument = gql`
   mutation addProject(
     $name: String!
     $members: [ProjectMemberInput!]
-    $domain: String!
+    $metaFields: JSON
     $stages: [LifeCycleStageInput!]
   ) {
-    addProject(name: $name, members: $members, metaFields: { domain: [$domain] }, stages: $stages) {
+    addProject(name: $name, members: $members, metaFields: $metaFields, stages: $stages) {
       name
       client
       domain
@@ -2049,7 +2049,7 @@ export type AddProjectMutationFn = Apollo.MutationFunction<AddProjectMutation, A
  *   variables: {
  *      name: // value for 'name'
  *      members: // value for 'members'
- *      domain: // value for 'domain'
+ *      metaFields: // value for 'metaFields'
  *      stages: // value for 'stages'
  *   },
  * });
@@ -2064,8 +2064,8 @@ export type AddProjectMutationHookResult = ReturnType<typeof useAddProjectMutati
 export type AddProjectMutationResult = Apollo.MutationResult<AddProjectMutation>
 export type AddProjectMutationOptions = Apollo.BaseMutationOptions<AddProjectMutation, AddProjectMutationVariables>
 export const GetProjectsDocument = gql`
-  query getProjects($jsonData: String!) {
-    projects(filters: { metaFields: { jsonContains: $jsonData } }) {
+  query getProjects($projectFilters: ProjectFilters) {
+    projects(filters: $projectFilters) {
       id
       projectId
       name
@@ -2088,11 +2088,13 @@ export const GetProjectsDocument = gql`
  * @example
  * const { data, loading, error } = useGetProjectsQuery({
  *   variables: {
- *      jsonData: // value for 'jsonData'
+ *      projectFilters: // value for 'projectFilters'
  *   },
  * });
  */
-export function useGetProjectsQuery(baseOptions: Apollo.QueryHookOptions<GetProjectsQuery, GetProjectsQueryVariables>) {
+export function useGetProjectsQuery(
+  baseOptions?: Apollo.QueryHookOptions<GetProjectsQuery, GetProjectsQueryVariables>,
+) {
   const options = { ...defaultOptions, ...baseOptions }
   return Apollo.useQuery<GetProjectsQuery, GetProjectsQueryVariables>(GetProjectsDocument, options)
 }

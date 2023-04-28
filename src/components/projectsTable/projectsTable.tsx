@@ -13,6 +13,7 @@ import {
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CardTitle, DataFetchWrapper, NoRowsOverlay, PaperPage } from '@lcacollect/components'
+import { useSettingsContext } from '@lcacollect/core'
 import {
   DataGridPro,
   GridActionsCellItem,
@@ -24,7 +25,6 @@ import {
 } from '@mui/x-data-grid-pro'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import { GraphQLErrors } from '@apollo/client/errors'
-import { DOMAIN_NAME, PROJECT_STAGE_LIST } from '../../config'
 
 interface ProjectsTableProps {
   canCreateProjects?: boolean
@@ -32,18 +32,25 @@ interface ProjectsTableProps {
 }
 
 export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: ProjectsTableProps) => {
+  const { domainName, projectStageList } = useSettingsContext()
   const [snackbar, setSnackbar] = useState<Pick<AlertProps, 'children' | 'severity'> | null>(null)
+
+  const projectFilters = domainName
+    ? { metaFields: { jsonContains: JSON.stringify({ domain: domainName }) } }
+    : undefined
   const {
     data: projectData,
     error: projectError,
     loading: projectLoading,
-  } = useGetProjectsQuery({ variables: { jsonData: JSON.stringify({ domain: DOMAIN_NAME }) } })
+  } = useGetProjectsQuery({ variables: { projectFilters } })
+
   const projects = useMemo(() => projectData?.projects, [projectData])
+
   const { data: accountData, error: accountError, loading: accountLoading } = useGetAccountQuery()
   const { data: stageData, error: stageError, loading: stageLoading } = useGetLifeCycleStagesQuery()
 
   const [deleteProject] = useDeleteProjectMutation({
-    refetchQueries: [{ query: GetProjectsDocument, variables: { jsonData: JSON.stringify({ domain: DOMAIN_NAME }) } }],
+    refetchQueries: [{ query: GetProjectsDocument, variables: { projectFilters } }],
   })
   const [addProject] = useAddProjectMutation()
 
@@ -56,13 +63,15 @@ export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: Projec
 
   const projectStages = useMemo(
     () =>
-      stageData?.lifeCycleStages
-        .filter((stage) => {
-          if (PROJECT_STAGE_LIST.includes(stage.phase)) {
-            return true
-          }
-        })
-        .map((stage) => ({ stageId: stage.id })),
+      projectStageList
+        ? stageData?.lifeCycleStages
+            .filter((stage) => {
+              if (projectStageList.includes(stage.phase)) {
+                return true
+              }
+            })
+            .map((stage) => ({ stageId: stage.id }))
+        : [],
     [stageData],
   )
 
@@ -74,16 +83,15 @@ export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: Projec
       return null
     }
 
-    const projVariables = {
-      ...(PROJECT_STAGE_LIST && { stages: projectStages as unknown as LifeCycleStageInput }),
-      ...{ name: '', members: [{ userId: accountData?.account.id as string }], domain: DOMAIN_NAME },
+    const projectVariables = {
+      ...(projectStageList && { stages: projectStages as unknown as LifeCycleStageInput }),
+      ...{ name: '', members: [{ userId: accountData?.account.id as string }] },
+      ...(domainName && { metaFields: { domain: domainName } }),
     }
 
     const { data, errors } = await addProject({
-      variables: projVariables,
-      refetchQueries: [
-        { query: GetProjectsDocument, variables: { jsonData: JSON.stringify({ domain: DOMAIN_NAME }) } },
-      ],
+      variables: projectVariables,
+      refetchQueries: [{ query: GetProjectsDocument, variables: { projectFilters } }],
     })
     if (errors) {
       handleErrors(errors)

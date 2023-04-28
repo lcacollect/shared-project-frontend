@@ -3,12 +3,16 @@ import { RecentProjectCard } from '../recentProjectCard'
 import React from 'react'
 import { useGetProjectsQuery } from '../../dataAccess'
 import { CardTitle, DataFetchWrapper, PaperPage } from '@lcacollect/components'
-import { DOMAIN_NAME } from '../../config'
+import { useSettingsContext } from '@lcacollect/core'
 
 export const RecentProjectsPaper = () => {
+  const { domainName } = useSettingsContext()
   const recentProjects = localStorage.getItem('recentProjects')?.split(',')
+  const projectFilters = domainName
+    ? { metaFields: { jsonContains: JSON.stringify({ domain: domainName }) } }
+    : undefined
   const { data, error, loading } = useGetProjectsQuery({
-    variables: { jsonData: JSON.stringify({ domain: DOMAIN_NAME }) },
+    variables: { projectFilters },
   })
   const projects = data?.projects
   return (

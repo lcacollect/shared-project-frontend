@@ -9,10 +9,10 @@ input LifeCycleStageInput {
 mutation addProject(
   $name: String!
   $members: [ProjectMemberInput!]
-  $domain: String!
+  $metaFields: JSON
   $stages: [LifeCycleStageInput!]
 ) {
-  addProject(name: $name, members: $members, metaFields: { domain: [$domain] }, stages: $stages) {
+  addProject(name: $name, members: $members, metaFields: $metaFields, stages: $stages) {
     name
     client
     domain
@@ -22,8 +22,16 @@ mutation addProject(
   }
 }
 
-query getProjects($jsonData: String!) {
-  projects(filters: { metaFields: { jsonContains: $jsonData } }) {
+input JsonContainsFilter {
+  jsonContains: String!
+}
+
+input ProjectFilters {
+  metaFields: JsonContainsFilter
+}
+
+query getProjects($projectFilters: ProjectFilters) {
+  projects(filters: $projectFilters) {
     id
     projectId
     name
