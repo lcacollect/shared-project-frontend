@@ -7,6 +7,8 @@ import {
   useGetAccountQuery,
   useGetProjectsQuery,
   GetProjectsDocument,
+  useGetLifeCycleStagesQuery,
+  LifeCycleStageInput,
 } from '../../dataAccess'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -22,7 +24,7 @@ import {
 } from '@mui/x-data-grid-pro'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import { GraphQLErrors } from '@apollo/client/errors'
-import { DOMAIN_NAME } from '../../config'
+import { DOMAIN_NAME, PROJECT_STAGE_LIST } from '../../config'
 
 interface ProjectsTableProps {
   canCreateProjects?: boolean
@@ -38,6 +40,8 @@ export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: Projec
   } = useGetProjectsQuery({ variables: { jsonData: JSON.stringify({ domain: DOMAIN_NAME }) } })
   const projects = useMemo(() => projectData?.projects, [projectData])
   const { data: accountData, error: accountError, loading: accountLoading } = useGetAccountQuery()
+  const { data: stageData, error: stageError, loading: stageLoading } = useGetLifeCycleStagesQuery()
+
   const [deleteProject] = useDeleteProjectMutation({
     refetchQueries: [{ query: GetProjectsDocument, variables: { jsonData: JSON.stringify({ domain: DOMAIN_NAME }) } }],
   })
@@ -50,6 +54,18 @@ export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: Projec
     [accountData],
   )
 
+  const projectStages = useMemo(
+    () =>
+      stageData?.lifeCycleStages
+        .filter((stage) => {
+          if (PROJECT_STAGE_LIST.includes(stage.phase)) {
+            return true
+          }
+        })
+        .map((stage) => ({ stageId: stage.id })),
+    [stageData],
+  )
+
   const handleCreateProject = async () => {
     if (!accountData?.account.id) {
       const error = 'Account details not loaded. Please try again'
@@ -57,8 +73,14 @@ export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: Projec
       setSnackbar({ children: error, severity: 'error' })
       return null
     }
+
+    const projVariables = {
+      ...(PROJECT_STAGE_LIST && { stages: projectStages as unknown as LifeCycleStageInput }),
+      ...{ name: '', members: [{ userId: accountData?.account.id as string }], domain: DOMAIN_NAME },
+    }
+
     const { data, errors } = await addProject({
-      variables: { name: '', members: [{ userId: accountData?.account.id as string }], domain: DOMAIN_NAME },
+      variables: projVariables,
       refetchQueries: [
         { query: GetProjectsDocument, variables: { jsonData: JSON.stringify({ domain: DOMAIN_NAME }) } },
       ],
@@ -163,11 +185,11 @@ export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: Projec
         tooltipText={createButtonToolTip}
       />
       <div style={{ height: 400, width: '100%' }}>
-        <DataFetchWrapper error={projectError || accountError}>
+        <DataFetchWrapper error={projectError || accountError || stageError}>
           <DataGridPro
             columns={columns}
             rows={projects || []}
-            loading={projectLoading || accountLoading}
+            loading={projectLoading || accountLoading || stageLoading}
             columnVisibilityModel={{
               id: false,
             }}

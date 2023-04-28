@@ -2,8 +2,17 @@ input ProjectMemberInput {
   userId: String!
 }
 
-mutation addProject($name: String!, $members: [ProjectMemberInput!], $domain: String!) {
-  addProject(name: $name, members: $members, metaFields: { domain: [$domain] }) {
+input LifeCycleStageInput {
+  stageId: String!
+}
+
+mutation addProject(
+  $name: String!
+  $members: [ProjectMemberInput!]
+  $domain: String!
+  $stages: [LifeCycleStageInput!]
+) {
+  addProject(name: $name, members: $members, metaFields: { domain: [$domain] }, stages: $stages) {
     name
     client
     domain
