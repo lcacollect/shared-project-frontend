@@ -1,6 +1,6 @@
 {
   "name": "@lcacollect/project",
-  "version": "1.1.10",
+  "version": "1.2.0",
   "description": "A shared library for project related components and pages",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -26,7 +26,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "Proprietary",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@apollo/client": "^3.7.2",
     "@graphql-codegen/cli": "^2.6.2",
