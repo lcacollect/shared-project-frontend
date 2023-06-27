@@ -29,9 +29,14 @@ import { GraphQLErrors } from '@apollo/client/errors'
 interface ProjectsTableProps {
   canCreateProjects?: boolean
   createButtonToolTip?: string
+  projectCreationCallback?: (projectId: string) => void
 }
 
-export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: ProjectsTableProps) => {
+export const ProjectsTable = ({
+  canCreateProjects,
+  createButtonToolTip,
+  projectCreationCallback,
+}: ProjectsTableProps) => {
   const { domainName, projectStageList } = useSettingsContext()
   const [snackbar, setSnackbar] = useState<Pick<AlertProps, 'children' | 'severity'> | null>(null)
 
@@ -98,6 +103,9 @@ export const ProjectsTable = ({ canCreateProjects, createButtonToolTip }: Projec
     } else {
       const projectId = data?.addProject.id || ''
       handleRowClick(projectId as GridRowId, 'settings')
+      if (projectCreationCallback) {
+        projectCreationCallback(projectId)
+      }
     }
   }
 
