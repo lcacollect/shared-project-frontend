@@ -1,4 +1,4 @@
-import { Alert, AlertProps, LinearProgress, Snackbar } from '@mui/material'
+import { Alert, AlertProps, CircularProgress, LinearProgress, Snackbar } from '@mui/material'
 
 import {
   GraphQlProject,
@@ -54,7 +54,7 @@ export const ProjectsTable = ({
   const { data: accountData, error: accountError, loading: accountLoading } = useGetAccountQuery()
   const { data: stageData, error: stageError, loading: stageLoading } = useGetLifeCycleStagesQuery()
 
-  const [deleteProject] = useDeleteProjectMutation({
+  const [deleteProject, { loading: deleteLoading }] = useDeleteProjectMutation({
     refetchQueries: [{ query: GetProjectsDocument, variables: { projectFilters } }],
   })
   const [addProject] = useAddProjectMutation()
@@ -176,8 +176,9 @@ export const ProjectsTable = ({
             return [
               <GridActionsCellItem
                 key={0}
-                icon={<DeleteIcon />}
+                icon={deleteLoading ? <CircularProgress /> : <DeleteIcon />}
                 label='Delete'
+                disabled={deleteLoading}
                 onClick={() => handleDeleteProject(id)}
                 color='inherit'
               />,
@@ -187,7 +188,7 @@ export const ProjectsTable = ({
         },
       },
     ],
-    [accountData, isAdmin],
+    [accountData, isAdmin, deleteLoading],
   )
 
   return (
