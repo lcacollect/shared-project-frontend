@@ -74,7 +74,7 @@ describe('Project Information | selectionDropdown', () => {
   it('should render the component with a special selectionDropdown', async () => {
     expect(await screen.findByTestId('project-information-table')).toBeInTheDocument()
     projectDomains.map(async (domain) => expect(await screen.findByTestId(`MenuItem-${domain}`)).toBeInTheDocument())
-    expect(await screen.findByTestId('ArrowDropDownIcon')).toBeInTheDocument()
+    expect(await screen.findAllByTestId('ArrowDropDownIcon')).toHaveLength(2)
     const dropdownElement = screen.getByTestId('select-domain')
     expect(dropdownElement).toBeInTheDocument()
     fireEvent.click(dropdownElement)
