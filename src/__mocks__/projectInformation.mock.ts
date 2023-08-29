@@ -26,6 +26,7 @@ export const projectInformationMock: MockedResponse[] = [
         domain: null,
         metaFields: null,
         file: null,
+        public: null,
         id: projectId,
       },
     },

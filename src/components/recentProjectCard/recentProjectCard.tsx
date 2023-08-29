@@ -42,8 +42,9 @@ export const RecentProjectCard: React.FC<RecentProjectCardProps> = ({ project, h
             {project.name}
           </Typography>
           <Divider />
-          <Typography fontSize={11}>{`Project ID: ${project.projectId}`}</Typography>
-          <Typography fontSize={11}>{`Client: ${project.client}`}</Typography>
+          <Typography fontSize={11}>{`Project ID: ${project.projectId || 'N/A'}`}</Typography>
+          <Typography fontSize={11}>{`Client: ${project.client || 'N/A'}`}</Typography>
+          <Typography fontSize={11}>{`Public: ${project.public ? 'Yes' : 'No'}`}</Typography>
         </CardContent>
       </CardActionArea>
     </Card>

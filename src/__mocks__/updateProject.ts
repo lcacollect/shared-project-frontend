@@ -10,6 +10,7 @@ export default {
       city: null,
       country: null,
       metaFields: {},
+      public: null,
       imageUrl: 'https://somewhere.com/image',
     },
   },

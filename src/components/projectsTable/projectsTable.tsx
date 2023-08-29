@@ -22,6 +22,7 @@ import {
   GridToolbarFilterButton,
   GridToolbarColumnsButton,
   GridRowParams,
+  GridValueFormatterParams,
 } from '@mui/x-data-grid-pro'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import { GraphQLErrors } from '@apollo/client/errors'
@@ -163,6 +164,12 @@ export const ProjectsTable = ({
         field: 'client',
         headerName: 'Client',
         flex: 2,
+      },
+      {
+        field: 'public',
+        headerName: 'Public Project',
+        flex: 1,
+        valueFormatter: (cell: GridValueFormatterParams) => (cell.value ? 'Yes' : 'No'),
       },
       {
         field: 'actions',
