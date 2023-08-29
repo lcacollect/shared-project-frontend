@@ -38,6 +38,7 @@ query getProjects($projectFilters: ProjectFilters) {
     client
     imageUrl
     metaFields
+    public
   }
 }
 
@@ -58,6 +59,7 @@ mutation updateProject(
   $country: String = null
   $domain: ProjectDomain = null
   $metaFields: JSON = null
+  $public: Boolean = null
   $file: String = null
 ) {
   updateProject(
@@ -70,6 +72,7 @@ mutation updateProject(
     country: $country
     domain: $domain
     metaFields: $metaFields
+    public: $public
     file: $file
   ) {
     name
@@ -89,6 +92,7 @@ query getSingleProject($id: String!) {
     country
     metaFields
     imageUrl
+    public
   }
 }
 

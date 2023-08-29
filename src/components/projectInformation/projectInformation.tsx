@@ -13,7 +13,7 @@ import {
   Stack,
   TextField,
 } from '@mui/material'
-import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
+import React, { Dispatch, ReactNode, SetStateAction, SyntheticEvent, useState } from 'react'
 import { GetSingleProjectDocument, GraphQlProject, ProjectDomain, useUpdateProjectMutation } from '../../dataAccess'
 
 interface ProjectInformationProps {
@@ -37,21 +37,32 @@ export const ProjectInformation: React.FC<ProjectInformationProps> = (props) => 
     { id: 'address', label: 'Address' },
     { id: 'city', label: 'City' },
     { id: 'country', label: 'Country' },
+    {
+      id: 'public',
+      label: 'Public Project',
+      type: 'dropdown',
+      options: [
+        { label: 'Yes', value: true },
+        { label: 'No', value: false },
+      ],
+    },
   ]
 
   return (
     <InnerPaper data-testid='project-information-table'>
       <CardTitle title='Project Information' size='medium' />
       <Stack spacing={2} sx={{ marginTop: 2 }}>
-        {fields.map(({ id, label }, index) => (
+        {fields.map(({ id, label, type = 'text', options = null }, index) => (
           <InformationInput
             key={index}
             id={id}
             label={label}
-            data={project[id as keyof GraphQlProject] as string}
+            data={project[id as keyof GraphQlProject]}
             projectId={project.id}
             setError={setSnackbar}
             data-testid={`project-information-input-${id}`}
+            type={type}
+            options={options}
           />
         ))}
         {selectionDropdown ?? <DomainDropdown data={project.domain} projectId={project.id} setError={setSnackbar} />}
@@ -131,19 +142,27 @@ const DomainDropdown = ({ data, projectId, setError }: DomainDropdownProps) => {
 interface InformationInputProps {
   id: string
   label: string
-  data?: string
+  data?: string | number | boolean
   projectId: string
+  type: 'text' | 'dropdown' | string
+  options?: { label: string; value: string | boolean }[] | null
   setError: Dispatch<SetStateAction<Pick<AlertProps, 'children' | 'severity'> | null>>
 }
 
 const InformationInput = (props: InformationInputProps) => {
-  const { id, label, data = '', projectId, setError } = props
-  const [value, setValue] = useState(data || '')
+  const { id, label, data = '', type, options, projectId, setError } = props
+  const [value, setValue] = useState<typeof data>(data)
   const [updateProject, { loading, error }] = useUpdateProjectMutation()
 
-  const handleBlur = async () => {
+  const handleBlur = async (event?: SelectChangeEvent<typeof value>) => {
+    let _value = value
+    if (event?.type === 'click') {
+      _value = event.target.value
+      setValue(_value)
+    }
+
     const { errors } = await updateProject({
-      variables: { id: projectId, [id]: value },
+      variables: { id: projectId, [id]: _value },
       refetchQueries: [{ query: GetSingleProjectDocument, variables: { id: projectId } }],
     })
 
@@ -156,6 +175,27 @@ const InformationInput = (props: InformationInputProps) => {
     }
   }
 
+  if (type === 'dropdown') {
+    return (
+      <FormControl fullWidth variant='standard'>
+        <InputLabel id={`select-${id}`}>{label}</InputLabel>
+        <Select
+          labelId={`select-${id}`}
+          id={id}
+          defaultValue={value}
+          value={value}
+          label={label}
+          onChange={(e) => handleBlur(e)}
+        >
+          {options?.map((option, index) => (
+            <MenuItem key={index} value={option.value as string}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    )
+  }
   return (
     <TextField
       id={id}
@@ -163,7 +203,7 @@ const InformationInput = (props: InformationInputProps) => {
       variant='standard'
       value={value}
       onChange={(e) => setValue(e.target.value)}
-      onBlur={handleBlur}
+      onBlur={() => handleBlur()}
       InputLabelProps={{
         shrink: true,
       }}
