@@ -50,6 +50,7 @@ export const StageCategory: React.FC<StageCategoryProps> = ({ categoryName, stag
               paddingLeft: 'unset',
               paddingTop: 'unset',
             },
+            height: '260px',
           }}
         >
           {stages.map((stage, index) => (
@@ -61,6 +62,7 @@ export const StageCategory: React.FC<StageCategoryProps> = ({ categoryName, stag
               id={stage.id}
               projectId={projectId}
               projectStage={projectStages.filter((projectStage) => projectStage.phase === stage.phase)[0]}
+              amount={stages.length}
             />
           ))}
         </Grid>
@@ -76,10 +78,11 @@ interface StageElementProps {
   projectId?: string
   projectStage?: Omit<GraphQlProjectStage, 'projectId'>
   currentStage: number
+  amount: number
 }
 
 const StageElement: React.FC<StageElementProps> = (props) => {
-  const { phase, name, id, projectId, projectStage, currentStage } = props
+  const { phase, name, id, projectId, projectStage, currentStage, amount } = props
   const [deleteProjectStage] = useDeleteProjectStageMutation({
     variables: {
       projectId: projectId as string,
@@ -108,11 +111,11 @@ const StageElement: React.FC<StageElementProps> = (props) => {
       gridArea: `horizontal${currentStage}`,
       transform: horizontalStage,
       transformOrigin: 'top',
-      marginLeft: '215px',
+      marginLeft: '200px',
       marginTop: '20px',
       marginBottom: '28px',
       width: '49px',
-      height: 'fit-content',
+      height: '100%',
     }
   } else {
     alignment = {
@@ -124,6 +127,14 @@ const StageElement: React.FC<StageElementProps> = (props) => {
       height: '100%',
     }
   }
+  let minBoxHeight
+  if (amount > 5 && !horizontalStage) {
+    minBoxHeight = '137px'
+  } else if (horizontalStage) {
+    minBoxHeight = '287px'
+  } else {
+    minBoxHeight = '260px'
+  }
 
   return (
     <Grid item sx={alignment} data-testid='topGrid'>
@@ -134,8 +145,8 @@ const StageElement: React.FC<StageElementProps> = (props) => {
           flexDirection: 'column',
           justifyContent: 'space-between',
           width: horizontalStage ? '39px' : '100%',
-          minHeight: '290px',
-          height: '100%',
+          minHeight: minBoxHeight,
+          height: amount > 5 && !horizontalStage ? '68%' : '100%',
           borderRadius: 2,
           border: 0,
           backgroundColor: color,
@@ -143,8 +154,9 @@ const StageElement: React.FC<StageElementProps> = (props) => {
           paddingY: '10px',
           boxSizing: 'border-box',
           cursor: 'default',
-          marginTop: horizontalStage ? '-50px' : 'unset',
-          marginLeft: horizontalStage ? '52px' : 'unset',
+          marginTop: horizontalStage ? '-62px' : 'unset',
+          marginLeft: horizontalStage ? '-78px' : 'unset',
+          marginBottom: '20px',
           transition: 'background-color 700ms ease',
           '&:hover': {
             cursor: 'pointer',
