@@ -10,9 +10,10 @@ interface StageCategoryGroup {
 
 interface ProjectStagesProps {
   projectId?: string
+  disabled?: boolean
 }
 
-export const ProjectStages: React.FC<ProjectStagesProps> = ({ projectId }) => {
+export const ProjectStages: React.FC<ProjectStagesProps> = ({ projectId, disabled }) => {
   const { data: lifeCycleStageData, loading: lifeCycleStageLoading } = useGetLifeCycleStagesQuery()
   const { data: projectStageData, loading: projectStageLoading } = useGetProjectStagesQuery({
     variables: { projectId: projectId as string },
@@ -51,6 +52,7 @@ export const ProjectStages: React.FC<ProjectStagesProps> = ({ projectId }) => {
               categoryName={name}
               stages={categories[name]}
               projectStages={projectStageData?.projectStages.filter((stage) => stage.category === name)}
+              disabled={disabled}
             />
           </Grid>
         ))}
