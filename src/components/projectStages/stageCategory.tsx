@@ -13,9 +13,16 @@ interface StageCategoryProps {
   categoryName: string
   projectStages: Omit<GraphQlProjectStage, 'projectId'>[]
   projectId?: string
+  disabled?: boolean
 }
 
-export const StageCategory: React.FC<StageCategoryProps> = ({ categoryName, stages, projectStages, projectId }) => {
+export const StageCategory: React.FC<StageCategoryProps> = ({
+  categoryName,
+  stages,
+  projectStages,
+  projectId,
+  disabled,
+}) => {
   const stagesGridColumns = ['']
   for (let i = 0; i < stages.length; i++) {
     stagesGridColumns.push(`vertical${i}`)
@@ -63,6 +70,7 @@ export const StageCategory: React.FC<StageCategoryProps> = ({ categoryName, stag
               projectId={projectId}
               projectStage={projectStages.filter((projectStage) => projectStage.phase === stage.phase)[0]}
               amount={stages.length}
+              disabled={disabled}
             />
           ))}
         </Grid>
@@ -79,10 +87,11 @@ interface StageElementProps {
   projectStage?: Omit<GraphQlProjectStage, 'projectId'>
   currentStage: number
   amount: number
+  disabled?: boolean
 }
 
 const StageElement: React.FC<StageElementProps> = (props) => {
-  const { phase, name, id, projectId, projectStage, currentStage, amount } = props
+  const { disabled, phase, name, id, projectId, projectStage, currentStage, amount } = props
   const [deleteProjectStage] = useDeleteProjectStageMutation({
     variables: {
       projectId: projectId as string,
@@ -139,7 +148,7 @@ const StageElement: React.FC<StageElementProps> = (props) => {
   return (
     <Grid item sx={alignment} data-testid='topGrid'>
       <Box
-        onClick={handleClick}
+        onClick={disabled ? undefined : handleClick}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -158,10 +167,12 @@ const StageElement: React.FC<StageElementProps> = (props) => {
           marginLeft: horizontalStage ? '-78px' : 'unset',
           marginBottom: '20px',
           transition: 'background-color 700ms ease',
-          '&:hover': {
-            cursor: 'pointer',
-            backgroundColor: theme.palette.neutral.main,
-          },
+          '&:hover': disabled
+            ? {}
+            : {
+                cursor: 'pointer',
+                backgroundColor: theme.palette.neutral.main,
+              },
         }}
       >
         <Box sx={{ color: theme.palette.common.black, textAlign: 'center', height: 'fit-content' }}>
