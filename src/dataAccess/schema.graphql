@@ -294,7 +294,7 @@ query getSchemaTemplates {
   schemaTemplates {
     id
     name
-    schema {
+    schemas {
       name
       id
     }
