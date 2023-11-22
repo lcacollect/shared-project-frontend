@@ -1,6 +1,6 @@
 import { AutoSaveCheckMark, DataFetchWrapper } from '@lcacollect/components'
 import { Alert, AlertProps, Autocomplete, Snackbar, TextField } from '@mui/material'
-import React, { SyntheticEvent, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   GetProjectSchemasDocument,
   GraphQlSchemaTemplate,
@@ -18,6 +18,7 @@ export const ProjectSchemaSelection = (props: ProjectSchemaSelectionProps) => {
   const { projectId } = props
 
   const [isSchemaAdded, setIsSchemaAdded] = useState(false)
+  const [defaultValue, setDefaultValue] = useState<GraphQlSchemaTemplate | null | undefined>()
   const [snackbar, setSnackbar] = useState<Pick<AlertProps, 'children' | 'severity'> | null>(null)
   const [addReportingSchema, { loading }] = useAddReportingSchemaFromTemplateMutation({
     refetchQueries: [{ query: GetProjectSchemasDocument, variables: { projectId: projectId } }],
@@ -39,7 +40,21 @@ export const ProjectSchemaSelection = (props: ProjectSchemaSelectionProps) => {
     skip: !projectId,
   })
 
-  const handleSchemaChange = async (event: SyntheticEvent, template: GraphQlSchemaTemplate | null | undefined) => {
+  // Set default value for reporting schema
+  useEffect(() => {
+    const schemaTemplates = schemaTemplateData?.schemaTemplates
+    // Only after schemaTemplates have been fetched
+    if (schemaTemplates) {
+      // Only set default value if it doesn't already exist on the project
+      if (!projectSchemaData?.reportingSchemas[0]) {
+        const defaultTemplate = schemaTemplates[0] as GraphQlSchemaTemplate
+        setDefaultValue(defaultTemplate)
+        handleSchemaChange(defaultTemplate)
+      }
+    }
+  }, [schemaTemplateData, projectSchemaData])
+
+  const handleSchemaChange = async (template: GraphQlSchemaTemplate | null | undefined) => {
     if (!template) {
       return null
     }
@@ -73,11 +88,11 @@ export const ProjectSchemaSelection = (props: ProjectSchemaSelectionProps) => {
         aria-label='reporting-schema-selector'
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        onChange={(event, template) => handleSchemaChange(event, template)}
+        onChange={(event, template) => handleSchemaChange(template)}
         disablePortal
         id='reporting-schemas'
         getOptionLabel={(option) => option.name}
-        value={projectSchemaData?.reportingSchemas[0] as GraphQlSchemaTemplate}
+        value={(projectSchemaData?.reportingSchemas[0] as GraphQlSchemaTemplate) ?? defaultValue}
         options={schemaTemplateData?.schemaTemplates || []}
         isOptionEqualToValue={(option, value) => option.name === value.name}
         renderInput={(params) => (
