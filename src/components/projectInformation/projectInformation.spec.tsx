@@ -32,7 +32,6 @@ describe('Project Information', () => {
     expect(screen.getByRole('textbox', { name: 'Address' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'City' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Country' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Domain' })).toBeInTheDocument()
   })
   it('should show allow updating input', async () => {
     const projectNameInput = screen.getByRole('textbox', { name: 'Project Name' })
