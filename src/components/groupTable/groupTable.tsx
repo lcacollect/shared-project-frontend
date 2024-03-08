@@ -243,7 +243,13 @@ export const GroupsTable = () => {
 
         if (isInEditMode) {
           return [
-            <GridActionsCellItem key={0} icon={<SaveIcon />} label='Save' onClick={handleSaveClick(id)} />,
+            <GridActionsCellItem
+              key={0}
+              icon={<SaveIcon />}
+              label='Save'
+              onClick={handleSaveClick(id)}
+              placeholder={''}
+            />,
             <GridActionsCellItem
               key={1}
               icon={<CancelIcon />}
@@ -251,6 +257,7 @@ export const GroupsTable = () => {
               className='textPrimary'
               onClick={handleCancelClick(id)}
               color='inherit'
+              placeholder={''}
             />,
           ]
         }
@@ -263,6 +270,7 @@ export const GroupsTable = () => {
             className='textPrimary'
             onClick={handleEditClick(id)}
             color='inherit'
+            placeholder={''}
           />,
           <GridActionsCellItem
             key={1}
@@ -270,6 +278,7 @@ export const GroupsTable = () => {
             label='Delete'
             onClick={handleDeleteClick(id)}
             color='inherit'
+            placeholder={''}
           />,
         ]
       },

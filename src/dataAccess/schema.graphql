@@ -22,12 +22,14 @@ mutation addProject(
   }
 }
 
-input JsonContainsFilter {
-  jsonContains: String!
+input FilterOptions {
+  equal: String = null
+  jsonContains: String = null
 }
 
 input ProjectFilters {
-  metaFields: JsonContainsFilter
+  domain: FilterOptions = null
+  metaFields: FilterOptions = null
 }
 
 query getProjects($projectFilters: ProjectFilters) {
@@ -294,7 +296,7 @@ query getSchemaTemplates {
   schemaTemplates {
     id
     name
-    schemas {
+    original {
       name
       id
     }

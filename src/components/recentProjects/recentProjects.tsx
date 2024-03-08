@@ -8,9 +8,7 @@ import { useSettingsContext } from '@lcacollect/core'
 export const RecentProjectsPaper = () => {
   const { domainName } = useSettingsContext()
   const recentProjects = localStorage.getItem('recentProjects')?.split(',')
-  const projectFilters = domainName
-    ? { metaFields: { jsonContains: JSON.stringify({ domain: domainName }) } }
-    : undefined
+  const projectFilters = domainName ? { domain: { equal: domainName } } : undefined
   const { data, error, loading } = useGetProjectsQuery({
     variables: { projectFilters },
   })
