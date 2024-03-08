@@ -64,7 +64,7 @@
   "peerDependencies": {
     "@azure/msal-browser": "^2.38.3",
     "@azure/msal-react": "^1.5.12",
-    "@lcacollect/components": "^1.2.6",
+    "@lcacollect/components": "^1.2.7",
     "@lcacollect/core": "^1.2.1",
     "@mui/icons-material": "^5.15.12",
     "@mui/material": "^5.15.12",
