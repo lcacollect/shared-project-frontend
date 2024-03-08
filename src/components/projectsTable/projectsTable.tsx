@@ -186,6 +186,7 @@ export const ProjectsTable = ({
                 disabled={deleteLoading}
                 onClick={() => handleDeleteProject(id)}
                 color='inherit'
+                placeholder={''}
               />,
             ]
           }
@@ -256,8 +257,9 @@ const ProjectToolbar = () => {
           color,
           fontWeight,
         }}
+        placeholder={''}
       />
-      <GridToolbarFilterButton sx={{ color, fontWeight }} />
+      <GridToolbarFilterButton sx={{ color, fontWeight }} placeholder={''} />
     </GridToolbarContainer>
   )
 }

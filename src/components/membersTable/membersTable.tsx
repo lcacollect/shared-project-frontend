@@ -305,7 +305,13 @@ export const MembersTable = () => {
 
         if (isInEditMode) {
           return [
-            <GridActionsCellItem key={0} icon={<SaveIcon />} label='Save' onClick={handleSaveClick(id)} />,
+            <GridActionsCellItem
+              key={0}
+              icon={<SaveIcon />}
+              label='Save'
+              onClick={handleSaveClick(id)}
+              placeholder={''}
+            />,
             <GridActionsCellItem
               key={1}
               icon={<CancelIcon />}
@@ -313,6 +319,7 @@ export const MembersTable = () => {
               className='textPrimary'
               onClick={handleCancelClick(id)}
               color='inherit'
+              placeholder={''}
             />,
           ]
         }
@@ -326,6 +333,7 @@ export const MembersTable = () => {
               className='textPrimary'
               color='inherit'
               disabled={true}
+              placeholder={''}
             />,
           ]
         } else {
@@ -337,6 +345,7 @@ export const MembersTable = () => {
               className='textPrimary'
               onClick={handleEditClick(id)}
               color='inherit'
+              placeholder={''}
             />,
             <GridActionsCellItem
               key={1}
@@ -344,6 +353,7 @@ export const MembersTable = () => {
               label='Delete'
               onClick={handleDeleteClick(id)}
               color='inherit'
+              placeholder={''}
             />,
           ]
         }

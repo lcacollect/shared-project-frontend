@@ -182,8 +182,8 @@ const InformationInput = (props: InformationInputProps) => {
         <Select
           labelId={`select-${id}`}
           id={id}
-          defaultValue={value}
-          value={value}
+          defaultValue={value.toString()}
+          value={value.toString()}
           label={label}
           onChange={(e) => handleBlur(e)}
         >
