@@ -50,7 +50,7 @@ export const ProjectSchemaSelection = (props: ProjectSchemaSelectionProps) => {
     }
 
     const { errors, data } = await addReportingSchema({
-      variables: { projectId, name: template.schemas ? template.schemas[0].name : undefined, templateId: template.id },
+      variables: { projectId, name: template.original?.name, templateId: template.id },
     })
 
     if (errors) {

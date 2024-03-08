@@ -41,9 +41,7 @@ export const ProjectsTable = ({
   const { domainName, projectStageList } = useSettingsContext()
   const [snackbar, setSnackbar] = useState<Pick<AlertProps, 'children' | 'severity'> | null>(null)
 
-  const projectFilters = domainName
-    ? { metaFields: { jsonContains: JSON.stringify({ domain: domainName }) } }
-    : undefined
+  const projectFilters = domainName ? { domain: { equal: domainName } } : undefined
   const {
     data: projectData,
     error: projectError,
@@ -92,7 +90,7 @@ export const ProjectsTable = ({
     const projectVariables = {
       ...(projectStageList && { stages: projectStages as unknown as LifeCycleStageInput }),
       ...{ name: '', members: [{ userId: accountData?.account.id as string }] },
-      ...(domainName && { metaFields: { domain: domainName } }),
+      ...(domainName && { domain: domainName }),
     }
 
     const { data, errors } = await addProject({
