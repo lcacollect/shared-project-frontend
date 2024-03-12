@@ -11,8 +11,9 @@ mutation addProject(
   $members: [ProjectMemberInput!]
   $metaFields: JSON
   $stages: [LifeCycleStageInput!]
+  $domain: String = null
 ) {
-  addProject(name: $name, members: $members, metaFields: $metaFields, stages: $stages) {
+  addProject(name: $name, members: $members, metaFields: $metaFields, stages: $stages, domain: $domain) {
     name
     client
     domain
@@ -59,7 +60,7 @@ mutation updateProject(
   $address: String = null
   $city: String = null
   $country: String = null
-  $domain: ProjectDomain = null
+  $domain: String = null
   $metaFields: JSON = null
   $public: Boolean = null
   $file: String = null

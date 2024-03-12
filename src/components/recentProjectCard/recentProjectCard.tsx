@@ -2,7 +2,7 @@ import { Card, CardActionArea, CardContent, CardMedia, Divider, Typography } fro
 import { useNavigate } from 'react-router-dom'
 import React from 'react'
 import { GraphQlProject } from '../../dataAccess'
-import { ProjectLogoPlaceholder } from '../../assets'
+import { ProjectLogoPlaceholder } from '../../components'
 
 export interface RecentProjectCardProps {
   project?: GraphQlProject
@@ -22,21 +22,7 @@ export const RecentProjectCard: React.FC<RecentProjectCardProps> = ({ project, h
   return (
     <Card sx={{ height: height ? height : 350, width, borderRadius: 5, maxWidth: maxWidth ? maxWidth : width }}>
       <CardActionArea onClick={() => navigate(`/projects/${project.id}`)}>
-        {imageUrl !== null ? (
-          <CardMedia component='img' src={imageUrl} height='160' />
-        ) : (
-          <ProjectLogoPlaceholder
-            sx={{
-              fontSize: '70px',
-              display: 'block',
-              margin: 'auto',
-              height: '90px',
-              paddingTop: '40px',
-              paddingBottom: '14px',
-              opacity: '0.2',
-            }}
-          />
-        )}
+        {imageUrl !== null ? <CardMedia component='img' src={imageUrl} height='160' /> : <ProjectLogoPlaceholder />}
         <CardContent sx={{ height: 300 }}>
           <Typography gutterBottom variant='subtitle1' component='div'>
             {project.name}
