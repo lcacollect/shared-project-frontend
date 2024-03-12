@@ -5381,7 +5381,7 @@
               {
                 "name": "domain",
                 "description": null,
-                "type": { "kind": "ENUM", "name": "ProjectDomain", "ofType": null },
+                "type": { "kind": "SCALAR", "name": "String", "ofType": null },
                 "defaultValue": "null",
                 "isDeprecated": false,
                 "deprecationReason": null
@@ -7511,7 +7511,7 @@
               {
                 "name": "domain",
                 "description": null,
-                "type": { "kind": "ENUM", "name": "ProjectDomain", "ofType": null },
+                "type": { "kind": "SCALAR", "name": "String", "ofType": null },
                 "defaultValue": "null",
                 "isDeprecated": false,
                 "deprecationReason": null

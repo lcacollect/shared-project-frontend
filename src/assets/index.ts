@@ -1,4 +1,10 @@
-import { Logo } from '@lcacollect/components'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import defaultLogo from './Logo_Logo_Coin.svg'
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import lcaWaterLogo from './lca_water.svg'
 
 // colors for the diagrams
 export const colors = [
@@ -15,4 +21,5 @@ export const colors = [
   '#7DCEA0',
 ]
 
-export const ProjectLogoPlaceholder = Logo
+export const recentProjectsLogo = defaultLogo
+export const envidanLogo = lcaWaterLogo

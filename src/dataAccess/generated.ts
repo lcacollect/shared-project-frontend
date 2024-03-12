@@ -830,7 +830,7 @@ export type MutationAddProjectArgs = {
   city?: InputMaybe<Scalars['String']>
   client?: InputMaybe<Scalars['String']>
   country?: InputMaybe<Scalars['String']>
-  domain?: InputMaybe<ProjectDomain>
+  domain?: InputMaybe<Scalars['String']>
   file?: InputMaybe<Scalars['String']>
   groups?: InputMaybe<Array<ProjectGroupInput>>
   members?: InputMaybe<Array<ProjectMemberInput>>
@@ -1077,7 +1077,7 @@ export type MutationUpdateProjectArgs = {
   city?: InputMaybe<Scalars['String']>
   client?: InputMaybe<Scalars['String']>
   country?: InputMaybe<Scalars['String']>
-  domain?: InputMaybe<ProjectDomain>
+  domain?: InputMaybe<Scalars['String']>
   file?: InputMaybe<Scalars['String']>
   id: Scalars['String']
   metaFields?: InputMaybe<Scalars['JSON']>
@@ -2953,6 +2953,7 @@ export type AddProjectMutationVariables = Exact<{
   members?: InputMaybe<Array<ProjectMemberInput> | ProjectMemberInput>
   metaFields?: InputMaybe<Scalars['JSON']>
   stages?: InputMaybe<Array<LifeCycleStageInput> | LifeCycleStageInput>
+  domain?: InputMaybe<Scalars['String']>
 }>
 
 export type AddProjectMutation = {
@@ -2994,7 +2995,7 @@ export type UpdateProjectMutationVariables = Exact<{
   address?: InputMaybe<Scalars['String']>
   city?: InputMaybe<Scalars['String']>
   country?: InputMaybe<Scalars['String']>
-  domain?: InputMaybe<ProjectDomain>
+  domain?: InputMaybe<Scalars['String']>
   metaFields?: InputMaybe<Scalars['JSON']>
   public?: InputMaybe<Scalars['Boolean']>
   file?: InputMaybe<Scalars['String']>
@@ -3310,8 +3311,9 @@ export const AddProjectDocument = gql`
     $members: [ProjectMemberInput!]
     $metaFields: JSON
     $stages: [LifeCycleStageInput!]
+    $domain: String = null
   ) {
-    addProject(name: $name, members: $members, metaFields: $metaFields, stages: $stages) {
+    addProject(name: $name, members: $members, metaFields: $metaFields, stages: $stages, domain: $domain) {
       name
       client
       domain
@@ -3340,6 +3342,7 @@ export type AddProjectMutationFn = Apollo.MutationFunction<AddProjectMutation, A
  *      members: // value for 'members'
  *      metaFields: // value for 'metaFields'
  *      stages: // value for 'stages'
+ *      domain: // value for 'domain'
  *   },
  * });
  */
@@ -3406,7 +3409,7 @@ export const UpdateProjectDocument = gql`
     $address: String = null
     $city: String = null
     $country: String = null
-    $domain: ProjectDomain = null
+    $domain: String = null
     $metaFields: JSON = null
     $public: Boolean = null
     $file: String = null
