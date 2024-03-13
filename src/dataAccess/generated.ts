@@ -381,7 +381,7 @@ export type GraphQlProject = {
   city?: Maybe<Scalars['String']>
   client?: Maybe<Scalars['String']>
   country?: Maybe<Scalars['String']>
-  domain?: Maybe<ProjectDomain>
+  domain?: Maybe<Scalars['String']>
   groups?: Maybe<Array<GraphQlProjectGroup>>
   id: Scalars['String']
   imageUrl?: Maybe<Scalars['String']>
@@ -1194,13 +1194,6 @@ export type ProjectAssemblyUpdateInput = {
   unit?: InputMaybe<GraphQlAssemblyUnit>
 }
 
-export enum ProjectDomain {
-  Buildings = 'buildings',
-  Energy = 'energy',
-  Infrastructure = 'infrastructure',
-  Tunnels = 'tunnels',
-}
-
 export type ProjectEpdFilters = {
   category?: InputMaybe<FilterOptions>
   id?: InputMaybe<FilterOptions>
@@ -1682,7 +1675,6 @@ export type ResolversTypes = {
   PageInfo: ResolverTypeWrapper<PageInfo>
   ProjectAssemblyAddInput: ProjectAssemblyAddInput
   ProjectAssemblyUpdateInput: ProjectAssemblyUpdateInput
-  ProjectDomain: ProjectDomain
   ProjectEPDFilters: ProjectEpdFilters
   ProjectFilters: ProjectFilters
   ProjectGroupFilters: ProjectGroupFilters
@@ -2030,7 +2022,7 @@ export type GraphQlProjectResolvers<
   city?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   client?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  domain?: Resolver<Maybe<ResolversTypes['ProjectDomain']>, ParentType, ContextType>
+  domain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   groups?: Resolver<Maybe<Array<ResolversTypes['GraphQLProjectGroup']>>, ParentType, ContextType>
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
@@ -2962,7 +2954,7 @@ export type AddProjectMutation = {
     __typename?: 'GraphQLProject'
     name: string
     client?: string | null
-    domain?: ProjectDomain | null
+    domain?: string | null
     id: string
     projectId?: string | null
     metaFields?: any | null
@@ -3018,7 +3010,7 @@ export type GetSingleProjectQuery = {
     projectId?: string | null
     name: string
     client?: string | null
-    domain?: ProjectDomain | null
+    domain?: string | null
     address?: string | null
     city?: string | null
     country?: string | null
@@ -3279,7 +3271,12 @@ export type GetProjectSchemasQueryVariables = Exact<{
 
 export type GetProjectSchemasQuery = {
   __typename?: 'Query'
-  reportingSchemas: Array<{ __typename?: 'GraphQLReportingSchema'; id: string; name: string }>
+  reportingSchemas: Array<{
+    __typename?: 'GraphQLReportingSchema'
+    id: string
+    name: string
+    templateId?: string | null
+  }>
 }
 
 export type AddReportingSchemaFromTemplateMutationVariables = Exact<{
@@ -3293,7 +3290,9 @@ export type AddReportingSchemaFromTemplateMutation = {
   addReportingSchemaFromTemplate: { __typename?: 'GraphQLReportingCreationSchema'; id: string; name: string }
 }
 
-export type GetSchemaTemplatesQueryVariables = Exact<{ [key: string]: never }>
+export type GetSchemaTemplatesQueryVariables = Exact<{
+  schemaTemplatesFilters?: InputMaybe<SchemaTemplateFilters>
+}>
 
 export type GetSchemaTemplatesQuery = {
   __typename?: 'Query'
@@ -4425,6 +4424,7 @@ export const GetProjectSchemasDocument = gql`
     reportingSchemas(projectId: $projectId) {
       id
       name
+      templateId
     }
   }
 `
@@ -4516,8 +4516,8 @@ export type AddReportingSchemaFromTemplateMutationOptions = Apollo.BaseMutationO
   AddReportingSchemaFromTemplateMutationVariables
 >
 export const GetSchemaTemplatesDocument = gql`
-  query getSchemaTemplates {
-    schemaTemplates {
+  query getSchemaTemplates($schemaTemplatesFilters: SchemaTemplateFilters) {
+    schemaTemplates(filters: $schemaTemplatesFilters) {
       id
       name
       original {
@@ -4540,6 +4540,7 @@ export const GetSchemaTemplatesDocument = gql`
  * @example
  * const { data, loading, error } = useGetSchemaTemplatesQuery({
  *   variables: {
+ *      schemaTemplatesFilters: // value for 'schemaTemplatesFilters'
  *   },
  * });
  */

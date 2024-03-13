@@ -33,6 +33,15 @@ export const reportingSchemaErrorMock: MockedResponse[] = [
   },
   {
     request: {
+      query: GetSchemaTemplatesDocument,
+      variables: {
+        schemaTemplatesFilters: { domain: { isAnyOf: ['default', ''] } },
+      },
+    },
+    error: new Error('An error occurred'),
+  },
+  {
+    request: {
       query: GetProjectSchemasDocument,
       variables: {
         projectId: 'acfa456f-6628-4c0d-a0c8-1a53b1a46785',

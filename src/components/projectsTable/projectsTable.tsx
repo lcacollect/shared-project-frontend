@@ -38,7 +38,7 @@ export const ProjectsTable = ({
   createButtonToolTip,
   projectCreationCallback,
 }: ProjectsTableProps) => {
-  const { domainName, projectStageList } = useSettingsContext()
+  const { domainName, projectStages } = useSettingsContext()
   const [snackbar, setSnackbar] = useState<Pick<AlertProps, 'children' | 'severity'> | null>(null)
 
   const projectFilters = domainName ? { domain: { equal: domainName } } : undefined
@@ -65,12 +65,12 @@ export const ProjectsTable = ({
     [accountData],
   )
 
-  const projectStages = useMemo(
+  const projectStageList = useMemo(
     () =>
-      projectStageList
+      projectStages
         ? stageData?.lifeCycleStages
             .filter((stage) => {
-              if (projectStageList.includes(stage.phase)) {
+              if (projectStages.includes(stage.phase)) {
                 return true
               }
             })
@@ -88,7 +88,7 @@ export const ProjectsTable = ({
     }
 
     const projectVariables = {
-      ...(projectStageList && { stages: projectStages as unknown as LifeCycleStageInput }),
+      ...(projectStages && { stages: projectStageList as unknown as LifeCycleStageInput }),
       ...{ name: '', members: [{ userId: accountData?.account.id as string }] },
       ...(domainName && { domain: domainName }),
     }
