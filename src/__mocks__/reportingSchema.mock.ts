@@ -37,6 +37,15 @@ export const reportingSchemaMock: MockedResponse[] = [
   },
   {
     request: {
+      query: GetSchemaTemplatesDocument,
+      variables: {
+        schemaTemplatesFilters: { domain: { isAnyOf: ['default', ''] } },
+      },
+    },
+    result: getSchemaTemplatesResponse,
+  },
+  {
+    request: {
       query: GetProjectSchemasDocument,
       variables: {
         projectId: 'acfa456f-6628-4c0d-a0c8-1a53b1a46785',

@@ -1,12 +1,30 @@
-import React from 'react'
-import { Divider, Grid, Paper, Stack, TextField, Typography } from '@mui/material'
-import { ProjectInformation, ProjectStages } from '../../components'
+import { Grid } from '@mui/material'
 import { useParams } from 'react-router-dom'
 import { useGetSingleProjectQuery } from '../../dataAccess'
-import { DataFetchWrapper, PaperPage } from '@lcacollect/components'
+import { DataFetchWrapper, PaperPage, PaperPageStack } from '@lcacollect/components'
+import {
+  BuildingImageUpload,
+  ProjectInformation,
+  ProjectSchemaSelection,
+  BuildingInformation,
+  BuildingEnergyInformation,
+  ProjectStages,
+} from '../../components'
+import { useSettingsContext } from '@lcacollect/core'
 
 export const ProjectSettingsPage = () => {
   const { projectId } = useParams()
+
+  const { displayConfig } = useSettingsContext()
+
+  // if no siteConext
+  const defaultDisplayValues = {
+    showBuildingEnergyInformation: true,
+    showBuildingInformation: true,
+    showStages: true,
+  }
+
+  const displayValues = { ...defaultDisplayValues, ...displayConfig }
 
   const { data, loading, error } = useGetSingleProjectQuery({
     variables: { id: projectId as string },
@@ -14,33 +32,37 @@ export const ProjectSettingsPage = () => {
   })
 
   return (
-    <PaperPage>
-      <DataFetchWrapper loading={loading} error={error}>
-        <Grid container spacing={2}>
-          <Grid item xs={3}>
-            <ProjectInformation project={data?.projects[0]} />
+    <PaperPageStack data-testid='project-settings-page'>
+      <PaperPage>
+        <DataFetchWrapper loading={loading} error={error} data-testid='data-fetch-wrapper'>
+          <Grid container spacing={2} data-testid='grid'>
+            <Grid item sm={12} md={6} xl={3} data-testid='project-information'>
+              <ProjectInformation
+                project={data?.projects[0]}
+                selectionDropdown={<ProjectSchemaSelection projectId={projectId || ''} />}
+              />
+            </Grid>
+            {displayValues.showBuildingInformation ? (
+              <Grid item sm={12} md={6} xl={3}>
+                <BuildingInformation projectId={projectId || ''} metaFields={data?.projects[0].metaFields} />
+              </Grid>
+            ) : null}
+            {displayValues.showBuildingEnergyInformation ? (
+              <Grid item sm={12} md={6} xl={3}>
+                <BuildingEnergyInformation projectId={projectId || ''} metaFields={data?.projects[0].metaFields} />
+              </Grid>
+            ) : null}
+            <Grid item sm={12} md={6} xl={3}>
+              <BuildingImageUpload data-testid='image-upload' />
+            </Grid>
           </Grid>
-          <Grid item xs={9}>
-            <ProjectStages projectId={projectId} />
-          </Grid>
-          <Grid item xs={3}>
-            <DomainInformation />
-          </Grid>
-        </Grid>
-      </DataFetchWrapper>
-    </PaperPage>
-  )
-}
-
-const DomainInformation = () => {
-  return (
-    <Paper elevation={5} sx={{ borderRadius: 3, padding: 2 }} data-testid='domain-information-table'>
-      <Typography variant='h5'>Domain Information</Typography>
-      <Divider sx={{ marginBottom: 2 }} />
-      <Stack spacing={2}>
-        <TextField id='type' label='Type' variant='standard' />
-        <TextField id='floors' label='Floors' variant='standard' />
-      </Stack>
-    </Paper>
+        </DataFetchWrapper>
+      </PaperPage>
+      {displayValues.showStages ? (
+        <PaperPage>
+          <ProjectStages data-testid='project-stages' projectId={projectId || ''} disabled={true} />
+        </PaperPage>
+      ) : null}
+    </PaperPageStack>
   )
 }

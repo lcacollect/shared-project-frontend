@@ -283,6 +283,7 @@ query getProjectSchemas($projectId: String!) {
   reportingSchemas(projectId: $projectId) {
     id
     name
+    templateId
   }
 }
 
@@ -293,8 +294,14 @@ mutation addReportingSchemaFromTemplate($templateId: String!, $name: String, $pr
   }
 }
 
-query getSchemaTemplates {
-  schemaTemplates {
+input SchemaTemplateFilters {
+  domain: FilterOptions = null
+  name: FilterOptions = null
+  id: FilterOptions = null
+}
+
+query getSchemaTemplates($schemaTemplatesFilters: SchemaTemplateFilters) {
+  schemaTemplates(filters: $schemaTemplatesFilters) {
     id
     name
     original {

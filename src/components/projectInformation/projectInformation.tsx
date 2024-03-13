@@ -1,6 +1,4 @@
-import { AutoSaveCheckMark, CardTitle, InnerPaper, Loading, theme } from '@lcacollect/components'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import CheckIcon from '@mui/icons-material/Check'
+import { AutoSaveCheckMark, CardTitle, InnerPaper, Loading } from '@lcacollect/components'
 import {
   Alert,
   AlertProps,
@@ -13,8 +11,8 @@ import {
   Stack,
   TextField,
 } from '@mui/material'
-import React, { Dispatch, ReactNode, SetStateAction, SyntheticEvent, useState } from 'react'
-import { GetSingleProjectDocument, GraphQlProject, ProjectDomain, useUpdateProjectMutation } from '../../dataAccess'
+import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
+import { GetSingleProjectDocument, GraphQlProject, useUpdateProjectMutation } from '../../dataAccess'
 
 interface ProjectInformationProps {
   project?: GraphQlProject
@@ -65,7 +63,7 @@ export const ProjectInformation: React.FC<ProjectInformationProps> = (props) => 
             options={options}
           />
         ))}
-        {selectionDropdown ?? <DomainDropdown data={project.domain} projectId={project.id} setError={setSnackbar} />}
+        {selectionDropdown}
       </Stack>
       {!!snackbar && (
         <Snackbar
@@ -78,64 +76,6 @@ export const ProjectInformation: React.FC<ProjectInformationProps> = (props) => 
         </Snackbar>
       )}
     </InnerPaper>
-  )
-}
-
-interface DomainDropdownProps {
-  data?: ProjectDomain | null | undefined
-  projectId: string | null | undefined
-  setError: Dispatch<SetStateAction<Pick<AlertProps, 'children' | 'severity'> | null>>
-}
-
-const DomainDropdown = ({ data, projectId, setError }: DomainDropdownProps) => {
-  const [domain, setDomain] = useState(data || '')
-  const [showCheckmark, setShowCheckmark] = useState(false)
-  const [updateProject, { loading, error }] = useUpdateProjectMutation()
-
-  const handleDomainChange = async (event: SelectChangeEvent) => {
-    const value = event.target.value as ProjectDomain
-    setDomain(value)
-    if (!projectId) {
-      return
-    }
-    const { errors } = await updateProject({
-      variables: { id: projectId, domain: value },
-    })
-
-    if (errors) {
-      errors.forEach((error) => console.error(error))
-      setError({ children: errors[0].message, severity: 'error' })
-    } else {
-      setError(null)
-      setShowCheckmark(true)
-      setTimeout(() => setShowCheckmark(false), 2000)
-    }
-  }
-  return (
-    <FormControl fullWidth variant='standard'>
-      <InputLabel id='select-domain'>Domain</InputLabel>
-      <Select
-        labelId='select-domain'
-        value={domain}
-        label='domain'
-        onChange={handleDomainChange}
-        IconComponent={() =>
-          loading ? (
-            <Loading />
-          ) : showCheckmark ? (
-            <CheckIcon sx={{ color: error ? theme.palette.error.main : theme.palette.success.main }} />
-          ) : (
-            <ArrowDropDownIcon />
-          )
-        }
-      >
-        {Object.values(ProjectDomain).map((domain, index) => (
-          <MenuItem key={index} value={domain}>
-            {domain.charAt(0).toUpperCase() + domain.slice(1)}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
   )
 }
 

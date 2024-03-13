@@ -1,6 +1,6 @@
 import { AutoSaveCheckMark, DataFetchWrapper } from '@lcacollect/components'
 import { Alert, AlertProps, Autocomplete, Snackbar, TextField } from '@mui/material'
-import React, { SyntheticEvent, useState } from 'react'
+import { SyntheticEvent, useState } from 'react'
 import {
   GetProjectSchemasDocument,
   GraphQlSchemaTemplate,
@@ -9,6 +9,7 @@ import {
   useGetSchemaTemplatesQuery,
 } from '../../dataAccess'
 import { ApolloError } from '@apollo/client'
+import { useSettingsContext } from '@lcacollect/core'
 
 interface ProjectSchemaSelectionProps {
   projectId: string
@@ -16,8 +17,8 @@ interface ProjectSchemaSelectionProps {
 
 export const ProjectSchemaSelection = (props: ProjectSchemaSelectionProps) => {
   const { projectId } = props
+  const { domainName } = useSettingsContext()
 
-  const [isSchemaAdded, setIsSchemaAdded] = useState(false)
   const [snackbar, setSnackbar] = useState<Pick<AlertProps, 'children' | 'severity'> | null>(null)
   const [addReportingSchema, { loading }] = useAddReportingSchemaFromTemplateMutation({
     refetchQueries: [{ query: GetProjectSchemasDocument, variables: { projectId: projectId } }],
@@ -26,7 +27,9 @@ export const ProjectSchemaSelection = (props: ProjectSchemaSelectionProps) => {
     data: schemaTemplateData,
     loading: schemaTemplateLoading,
     error: schemaTemplateError,
-  } = useGetSchemaTemplatesQuery()
+  } = useGetSchemaTemplatesQuery({
+    variables: { schemaTemplatesFilters: { domain: { isAnyOf: ['default', domainName || ''] } } },
+  })
 
   const {
     data: projectSchemaData,
@@ -39,26 +42,26 @@ export const ProjectSchemaSelection = (props: ProjectSchemaSelectionProps) => {
     skip: !projectId,
   })
 
+  const isSchemaAdded = (template: GraphQlSchemaTemplate) => {
+    return projectSchemaData?.reportingSchemas.find((reportingSchema) => reportingSchema.templateId == template.id)
+  }
+
   const handleSchemaChange = async (event: SyntheticEvent, template: GraphQlSchemaTemplate | null | undefined) => {
     if (!template) {
       return null
     }
 
-    if (isSchemaAdded) {
+    if (isSchemaAdded(template)) {
       console.log('Reporting schema already exists, returning')
       return null
     }
 
-    const { errors, data } = await addReportingSchema({
+    const { errors } = await addReportingSchema({
       variables: { projectId, name: template.original?.name, templateId: template.id },
     })
 
     if (errors) {
       setSnackbar({ children: `${errors[0].message}`, severity: 'error' })
-    }
-
-    if (data?.addReportingSchemaFromTemplate.id) {
-      setIsSchemaAdded(true)
     }
 
     return null
@@ -77,7 +80,9 @@ export const ProjectSchemaSelection = (props: ProjectSchemaSelectionProps) => {
         disablePortal
         id='reporting-schemas'
         getOptionLabel={(option) => option.name}
-        value={projectSchemaData?.reportingSchemas[0] as GraphQlSchemaTemplate}
+        value={
+          projectSchemaData?.reportingSchemas[projectSchemaData?.reportingSchemas.length - 1] as GraphQlSchemaTemplate
+        }
         options={schemaTemplateData?.schemaTemplates || []}
         isOptionEqualToValue={(option, value) => option.name === value.name}
         renderInput={(params) => (
