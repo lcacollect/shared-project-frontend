@@ -28,7 +28,7 @@ export const ProjectSchemaSelection = (props: ProjectSchemaSelectionProps) => {
     loading: schemaTemplateLoading,
     error: schemaTemplateError,
   } = useGetSchemaTemplatesQuery({
-    variables: { schemaTemplatesFilters: { domain: { isAnyOf: ['default', domainName || ''] } } },
+    variables: { schemaTemplatesFilters: { domain: { isAnyOf: domainName ? ['default', domainName] : null } } },
   })
 
   const {
