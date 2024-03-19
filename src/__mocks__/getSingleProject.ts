@@ -12,6 +12,7 @@ export default {
         country: null,
         metaFields: {},
         imageUrl: 'https://somewhere.com/image',
+        public: false,
       },
     ],
   },

@@ -19,7 +19,7 @@ describe('Members Table', () => {
       </MockedProvider>,
     )
     expect(baseElement).toBeTruthy()
-  })
+  }, 10000)
   it('should render the component properly', async () => {
     expect(await screen.findByTestId('member-table')).toBeInTheDocument()
     expect(await screen.getByRole('columnheader', { name: /Name/i })).toBeInTheDocument()

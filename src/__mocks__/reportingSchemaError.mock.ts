@@ -35,7 +35,7 @@ export const reportingSchemaErrorMock: MockedResponse[] = [
     request: {
       query: GetSchemaTemplatesDocument,
       variables: {
-        schemaTemplatesFilters: { domain: { isAnyOf: ['default', ''] } },
+        schemaTemplatesFilters: { domain: { isAnyOf: null } },
       },
     },
     error: new Error('An error occurred'),
